@@ -465,11 +465,13 @@ h1, h2, h3, h4 {
   grid-template-columns: 1fr;
   gap: 1.75rem;
   align-items: stretch;
+  max-width: 820px;
+  margin-inline: auto;
 }
 
 @media (min-width: 768px) {
   .pricing-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -492,16 +494,17 @@ h1, h2, h3, h4 {
   transform: translateY(-4px);
 }
 
-.pricing-card--popular {
+.pricing-card--popular,
+.pricing-card--featured {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #fff;
-  transform: scale(1.03);
   box-shadow: 0 8px 40px rgba(178, 34, 52, 0.35);
 }
 
-.pricing-card--popular:hover {
-  transform: scale(1.03) translateY(-4px);
+.pricing-card--popular:hover,
+.pricing-card--featured:hover {
+  transform: translateY(-4px);
 }
 
 .popular-badge {
@@ -592,6 +595,47 @@ h1, h2, h3, h4 {
 .pricing-features li.feature-missing::before {
   content: '✕';
   color: currentColor;
+}
+
+/* Promo pricing */
+.pricing-promo-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.price-original {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: line-through;
+  opacity: 0.55;
+  line-height: 1;
+  margin-bottom: 0.15rem;
+}
+
+.price-note {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.8;
+  margin-top: 0.4rem;
+}
+
+/* Contact pricing */
+.pricing-contact-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  min-height: 4.5rem;
+}
+
+.contact-pricing-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  text-align: center;
+  line-height: 1.3;
 }
 
 /* ============================================================
