@@ -325,7 +325,7 @@ h1, h2, h3, h4 {
   text-align: center;
   overflow: hidden;
   background:
-    url('assets/images/hero-bg.jpg') center/cover no-repeat,
+    url('../assets/images/hero-bg.jpg') center/cover no-repeat,
     linear-gradient(135deg, var(--color-dark) 0%, var(--color-secondary) 100%);
   padding-top: var(--nav-height);
 }
@@ -849,6 +849,142 @@ h1, h2, h3, h4 {
   background: var(--color-primary);
   color: #fff;
   transform: translateY(-2px);
+}
+
+/* ============================================================
+   PATRIOTIC STRIPE DIVIDER
+   ============================================================ */
+.patriot-stripe {
+  height: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary)   0%,   var(--color-primary)   33.33%,
+    var(--color-accent)    33.33%, var(--color-accent)  66.66%,
+    var(--color-secondary) 66.66%, var(--color-secondary) 100%
+  );
+}
+
+/* ============================================================
+   HERO FLAG
+   ============================================================ */
+.hero-flag {
+  position: absolute;
+  top: calc(var(--nav-height) + 1.5rem);
+  right: 2rem;
+  width: clamp(120px, 15vw, 190px);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 3px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  overflow: hidden;
+  z-index: 2;
+  opacity: 0.92;
+}
+
+.hero-flag svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   PHOTO GALLERY
+   ============================================================ */
+.gallery {
+  background: var(--color-dark);
+  padding: 5rem 0;
+}
+
+.gallery .section-title {
+  color: #fff;
+}
+
+.gallery .section-title::after {
+  background: var(--color-primary);
+}
+
+.gallery .section-sub {
+  color: rgba(255,255,255,0.55);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.gallery-item {
+  overflow: hidden;
+  border-radius: var(--radius);
+  aspect-ratio: 4 / 3;
+  background: var(--color-secondary);
+}
+
+.gallery-item--wide {
+  grid-column: span 2;
+  aspect-ratio: 16 / 7;
+}
+
+@media (min-width: 768px) {
+  .gallery-item--wide {
+    grid-column: span 2;
+    aspect-ratio: 16 / 7;
+  }
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: brightness(0.9);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+  filter: brightness(1);
+}
+
+/* ============================================================
+   TEXAS MAP
+   ============================================================ */
+.texas-map-wrapper {
+  margin-bottom: 1.75rem;
+}
+
+.texas-svg {
+  display: block;
+  width: 160px;
+  margin-top: 0.6rem;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+
+.texas-outline {
+  fill: var(--color-secondary);
+  fill-opacity: 0.15;
+  stroke: var(--color-secondary);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.texas-star {
+  font-size: 16px;
+  fill: var(--color-primary);
+  font-weight: 900;
+}
+
+.texas-city-label {
+  font-size: 9px;
+  fill: var(--color-secondary);
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 /* ============================================================

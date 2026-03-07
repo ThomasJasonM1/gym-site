@@ -44,7 +44,7 @@
 
   /* ---- Scroll-spy: highlight active nav link ---- */
   // Build a map of section id → nav link
-  const sectionIds = ['home', 'classes', 'pricing', 'contact'];
+  const sectionIds = ['home', 'classes', 'gallery', 'pricing', 'contact'];
 
   function getNavHeight() {
     return parseInt(

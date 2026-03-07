@@ -25,6 +25,7 @@
       <ul class="nav-menu" id="navMenu">
         <li><a href="#home" class="nav-link active">Home</a></li>
         <li><a href="#classes" class="nav-link">Classes</a></li>
+        <li><a href="#gallery" class="nav-link">Gallery</a></li>
         <li><a href="#pricing" class="nav-link">Pricing</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
@@ -34,6 +35,50 @@
   <!-- ===== HERO ===== -->
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
+    <!-- Decorative American flag -->
+    <div class="hero-flag" aria-hidden="true">
+      <svg viewBox="0 0 190 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Red base -->
+        <rect width="190" height="100" fill="#b22234"/>
+        <!-- White stripes (stripes 2,4,6,8,10,12) -->
+        <rect y="7.7"  width="190" height="7.7" fill="#fff"/>
+        <rect y="23.1" width="190" height="7.7" fill="#fff"/>
+        <rect y="38.5" width="190" height="7.7" fill="#fff"/>
+        <rect y="53.8" width="190" height="7.7" fill="#fff"/>
+        <rect y="69.2" width="190" height="7.7" fill="#fff"/>
+        <rect y="84.6" width="190" height="7.7" fill="#fff"/>
+        <!-- Blue canton -->
+        <rect width="76" height="54" fill="#3c3b6e"/>
+        <!-- Stars: 9 rows alternating 6 and 5 -->
+        <!-- Row 1 (6 stars) -->
+        <circle cx="6"  cy="4"  r="2.2" fill="#fff"/><circle cx="18" cy="4"  r="2.2" fill="#fff"/><circle cx="30" cy="4"  r="2.2" fill="#fff"/>
+        <circle cx="42" cy="4"  r="2.2" fill="#fff"/><circle cx="54" cy="4"  r="2.2" fill="#fff"/><circle cx="66" cy="4"  r="2.2" fill="#fff"/>
+        <!-- Row 2 (5 stars, offset) -->
+        <circle cx="12" cy="10" r="2.2" fill="#fff"/><circle cx="24" cy="10" r="2.2" fill="#fff"/><circle cx="36" cy="10" r="2.2" fill="#fff"/>
+        <circle cx="48" cy="10" r="2.2" fill="#fff"/><circle cx="60" cy="10" r="2.2" fill="#fff"/>
+        <!-- Row 3 (6 stars) -->
+        <circle cx="6"  cy="16" r="2.2" fill="#fff"/><circle cx="18" cy="16" r="2.2" fill="#fff"/><circle cx="30" cy="16" r="2.2" fill="#fff"/>
+        <circle cx="42" cy="16" r="2.2" fill="#fff"/><circle cx="54" cy="16" r="2.2" fill="#fff"/><circle cx="66" cy="16" r="2.2" fill="#fff"/>
+        <!-- Row 4 (5 stars) -->
+        <circle cx="12" cy="22" r="2.2" fill="#fff"/><circle cx="24" cy="22" r="2.2" fill="#fff"/><circle cx="36" cy="22" r="2.2" fill="#fff"/>
+        <circle cx="48" cy="22" r="2.2" fill="#fff"/><circle cx="60" cy="22" r="2.2" fill="#fff"/>
+        <!-- Row 5 (6 stars) -->
+        <circle cx="6"  cy="28" r="2.2" fill="#fff"/><circle cx="18" cy="28" r="2.2" fill="#fff"/><circle cx="30" cy="28" r="2.2" fill="#fff"/>
+        <circle cx="42" cy="28" r="2.2" fill="#fff"/><circle cx="54" cy="28" r="2.2" fill="#fff"/><circle cx="66" cy="28" r="2.2" fill="#fff"/>
+        <!-- Row 6 (5 stars) -->
+        <circle cx="12" cy="34" r="2.2" fill="#fff"/><circle cx="24" cy="34" r="2.2" fill="#fff"/><circle cx="36" cy="34" r="2.2" fill="#fff"/>
+        <circle cx="48" cy="34" r="2.2" fill="#fff"/><circle cx="60" cy="34" r="2.2" fill="#fff"/>
+        <!-- Row 7 (6 stars) -->
+        <circle cx="6"  cy="40" r="2.2" fill="#fff"/><circle cx="18" cy="40" r="2.2" fill="#fff"/><circle cx="30" cy="40" r="2.2" fill="#fff"/>
+        <circle cx="42" cy="40" r="2.2" fill="#fff"/><circle cx="54" cy="40" r="2.2" fill="#fff"/><circle cx="66" cy="40" r="2.2" fill="#fff"/>
+        <!-- Row 8 (5 stars) -->
+        <circle cx="12" cy="46" r="2.2" fill="#fff"/><circle cx="24" cy="46" r="2.2" fill="#fff"/><circle cx="36" cy="46" r="2.2" fill="#fff"/>
+        <circle cx="48" cy="46" r="2.2" fill="#fff"/><circle cx="60" cy="46" r="2.2" fill="#fff"/>
+        <!-- Row 9 (6 stars) -->
+        <circle cx="6"  cy="52" r="2.2" fill="#fff"/><circle cx="18" cy="52" r="2.2" fill="#fff"/><circle cx="30" cy="52" r="2.2" fill="#fff"/>
+        <circle cx="42" cy="52" r="2.2" fill="#fff"/><circle cx="54" cy="52" r="2.2" fill="#fff"/><circle cx="66" cy="52" r="2.2" fill="#fff"/>
+      </svg>
+    </div>
     <div class="hero-content">
       <p class="hero-eyebrow">Your Community. Your Strength.</p>
       <h1 class="hero-headline">Built American.<br />Built Tough.</h1>
@@ -41,6 +86,9 @@
       <a href="#pricing" class="btn btn-primary hero-cta">View Membership Plans</a>
     </div>
   </section>
+
+  <!-- Patriotic stripe divider -->
+  <div class="patriot-stripe" aria-hidden="true"></div>
 
   <!-- ===== CLASS SCHEDULES ===== -->
   <section class="classes" id="classes">
@@ -183,6 +231,39 @@
     </div>
   </section>
 
+  <!-- ===== PHOTO GALLERY ===== -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Our Gym</h2>
+        <p class="section-sub">Real people. Real results. Real community.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item gallery-item--wide">
+          <img src="assets/images/post-workout-group.jpg" alt="Country Fit group workout" loading="lazy" />
+        </div>
+        <div class="gallery-item">
+          <img src="assets/images/class-instructor-training.jpg" alt="Personal training session" loading="lazy" />
+        </div>
+        <div class="gallery-item">
+          <img src="assets/images/outdoor-workout.jpg" alt="Outdoor workout" loading="lazy" />
+        </div>
+        <div class="gallery-item">
+          <img src="assets/images/post-workout-2.jpg" alt="Post workout" loading="lazy" />
+        </div>
+        <div class="gallery-item">
+          <img src="assets/images/stock-photo-1.jpg" alt="Country Fit gym" loading="lazy" />
+        </div>
+        <div class="gallery-item">
+          <img src="assets/images/stock-photo-2.jpg" alt="Country Fit gym" loading="lazy" />
+        </div>
+        <div class="gallery-item">
+          <img src="assets/images/stock-photo-3.jpg" alt="Country Fit gym" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== MEMBERSHIP PRICING ===== -->
   <section class="pricing" id="pricing">
     <div class="container">
@@ -242,6 +323,40 @@
           <div class="info-block">
             <h3 class="info-heading">Address</h3>
             <p>2409 Country Road 645<br />Farmersville, TX 75442</p>
+          </div>
+
+          <!-- Texas SVG with Farmersville marker -->
+          <div class="texas-map-wrapper">
+            <h3 class="info-heading">Find Us in North Texas</h3>
+            <svg class="texas-svg" viewBox="0 0 190 210" xmlns="http://www.w3.org/2000/svg" aria-label="Texas map with Farmersville marked">
+              <!-- Texas outline -->
+              <path class="texas-outline" d="
+                M 30,10
+                L 112,10
+                L 112,54
+                L 132,54
+                L 145,62
+                L 152,92
+                L 157,115
+                L 150,138
+                L 138,158
+                L 119,175
+                L 97,185
+                L 76,181
+                L 57,166
+                L 40,148
+                L 25,123
+                L 15,98
+                L 12,78
+                L 15,60
+                L 22,42
+                L 28,26
+                Z
+              "/>
+              <!-- Farmersville star (~33.16°N 96.36°W → upper-right of state body) -->
+              <text class="texas-star" x="126" y="72" text-anchor="middle">★</text>
+              <text class="texas-city-label" x="126" y="85" text-anchor="middle">Farmersville</text>
+            </svg>
           </div>
           <div class="info-block">
             <h3 class="info-heading">Phone &amp; Email</h3>
@@ -307,6 +422,7 @@
         <ul>
           <li><a href="#home">Home</a></li>
           <li><a href="#classes">Classes</a></li>
+          <li><a href="#gallery">Gallery</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
