@@ -151,4 +151,64 @@
     }, 5000);
   }
 
+  /* ---- Photo Carousel ---- */
+  const carouselEl   = document.getElementById('carousel');
+  const carouselTrack = document.getElementById('carouselTrack');
+  const carouselPrev  = document.getElementById('carouselPrev');
+  const carouselNext  = document.getElementById('carouselNext');
+  const carouselDots  = document.getElementById('carouselDots');
+
+  if (carouselEl && carouselTrack) {
+    const slides = carouselTrack.querySelectorAll('.carousel-slide');
+    let current  = 0;
+    let autoTimer = null;
+
+    // Build dot indicators
+    slides.forEach(function (_, i) {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Photo ' + (i + 1));
+      dot.addEventListener('click', function () { goTo(i); resetAuto(); });
+      carouselDots.appendChild(dot);
+    });
+
+    function goTo(index) {
+      current = (index + slides.length) % slides.length;
+      carouselTrack.style.transform = 'translateX(-' + (current * 100) + '%)';
+      carouselDots.querySelectorAll('.carousel-dot').forEach(function (d, i) {
+        d.classList.toggle('active', i === current);
+      });
+    }
+
+    function startAuto() {
+      autoTimer = setInterval(function () { goTo(current + 1); }, 4500);
+    }
+
+    function resetAuto() {
+      clearInterval(autoTimer);
+      startAuto();
+    }
+
+    if (carouselPrev) carouselPrev.addEventListener('click', function () { goTo(current - 1); resetAuto(); });
+    if (carouselNext) carouselNext.addEventListener('click', function () { goTo(current + 1); resetAuto(); });
+
+    // Pause auto-advance while hovering
+    carouselEl.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
+    carouselEl.addEventListener('mouseleave', startAuto);
+
+    // Swipe support for touch devices
+    let touchStartX = 0;
+    carouselEl.addEventListener('touchstart', function (e) {
+      touchStartX = e.touches[0].clientX;
+      clearInterval(autoTimer);
+    }, { passive: true });
+    carouselEl.addEventListener('touchend', function (e) {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) { diff > 0 ? goTo(current + 1) : goTo(current - 1); }
+      startAuto();
+    }, { passive: true });
+
+    startAuto();
+  }
+
 })();
