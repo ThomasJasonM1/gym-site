@@ -9,11 +9,13 @@
 // ============================================================
 
 window.CAROUSEL_IMAGES = [
-  "assets/images/post-workout-group.jpg",
-  "assets/images/class-instructor-training.jpg",
-  "assets/images/outdoor-workout.jpg",
-  "assets/images/post-workout-2.jpg",
-  "assets/images/stock-photo-1.jpg",
-  "assets/images/stock-photo-2.jpg",
-  "assets/images/stock-photo-3.jpg"
+  "assets/images/carousel/stock-photo-1.jpg",
+  "assets/images/carousel/stock-photo-2.jpg",
+  "assets/images/carousel/stock-photo-3.jpg",
+  "assets/images/carousel/stock-photo-4.jpg",
+  "assets/images/carousel/stock-photo-5.jpg",
+  "assets/images/carousel/stock-photo-6.jpg",
+  "assets/images/carousel/stock-photo-7.jpg",
+  "assets/images/carousel/stock-photo-8.jpg",
+  "assets/images/carousel/stock-photo-9.jpg"
 ];
