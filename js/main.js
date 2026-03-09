@@ -114,16 +114,37 @@
         return;
       }
 
-      // Open user's mail client pre-filled with the message
-      var subject = encodeURIComponent('Message from ' + name + ' via CountryFit website');
-      var body    = encodeURIComponent(
-        'Name: ' + name + '\n' +
-        'Email: ' + email + '\n\n' +
-        'Message:\n' + message
-      );
-      window.location.href = 'mailto:info@countryfittx.com?subject=' + subject + '&body=' + body;
+      const submitBtn = contactForm.querySelector('[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
 
-      contactForm.reset();
+      fetch('https://formspree.io/f/meerenev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          message: message,
+          _subject: 'Support Request from ' + name,
+          _replyto: email
+        })
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          showFormMessage('Thanks, ' + name + '! Your message has been sent — we\'ll be in touch soon.', 'success');
+          contactForm.reset();
+        } else {
+          showFormMessage('Something went wrong. Please try again or email us directly at info@countryfittx.com.', 'error');
+        }
+      })
+      .catch(function () {
+        showFormMessage('Could not send message. Please email us directly at info@countryfittx.com.', 'error');
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+      });
     });
   }
 
