@@ -152,20 +152,35 @@
   }
 
   /* ---- Photo Carousel ---- */
-  const carouselEl   = document.getElementById('carousel');
+  const carouselEl    = document.getElementById('carousel');
   const carouselTrack = document.getElementById('carouselTrack');
   const carouselPrev  = document.getElementById('carouselPrev');
   const carouselNext  = document.getElementById('carouselNext');
   const carouselDots  = document.getElementById('carouselDots');
 
   if (carouselEl && carouselTrack) {
-    const slides = carouselTrack.querySelectorAll('.carousel-slide');
-    let current  = 0;
-    let autoTimer = null;
+    // Build slide elements from carousel-config.js (window.CAROUSEL_IMAGES)
+    var imageList = (window.CAROUSEL_IMAGES || []).filter(Boolean);
+    imageList.forEach(function (filename) {
+      var slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      var img = document.createElement('img');
+      img.src = 'assets/carousel/' + filename;
+      img.alt = 'Country Fit gym';
+      img.loading = 'lazy';
+      slide.appendChild(img);
+      carouselTrack.appendChild(slide);
+    });
+
+    var slides = carouselTrack.querySelectorAll('.carousel-slide');
+    if (slides.length === 0) { carouselEl.style.display = 'none'; }  // hide if no images
+
+    var current   = 0;
+    var autoTimer = null;
 
     // Build dot indicators
     slides.forEach(function (_, i) {
-      const dot = document.createElement('button');
+      var dot = document.createElement('button');
       dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
       dot.setAttribute('aria-label', 'Photo ' + (i + 1));
       dot.addEventListener('click', function () { goTo(i); resetAuto(); });
@@ -175,7 +190,7 @@
     function goTo(index) {
       current = (index + slides.length) % slides.length;
       carouselTrack.style.transform = 'translateX(-' + (current * 100) + '%)';
-      carouselDots.querySelectorAll('.carousel-dot').forEach(function (d, i) {
+      Array.prototype.forEach.call(carouselDots.querySelectorAll('.carousel-dot'), function (d, i) {
         d.classList.toggle('active', i === current);
       });
     }
