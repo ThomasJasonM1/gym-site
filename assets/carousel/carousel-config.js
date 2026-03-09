@@ -1,15 +1,19 @@
 // ============================================================
 // Country Fit Carousel — Image Config
 // ============================================================
-// Drop images into assets/carousel/ then run update-carousel.ps1
-// (from the repo root) to regenerate this file automatically.
+// To update: drop images into assets/carousel/ then run
+//   .\update-carousel.ps1
+// from the repo root. It regenerates this file automatically.
 //
-// Or edit the array below manually — just the filenames, no paths.
-// Supported formats: .jpg, .jpeg, .png, .webp
+// Paths are relative to index.html (site root).
 // ============================================================
 
 window.CAROUSEL_IMAGES = [
-  // Add image filenames here, e.g.:
-  // "my-photo.jpg",
-  // "another-photo.png"
+  "assets/images/post-workout-group.jpg",
+  "assets/images/class-instructor-training.jpg",
+  "assets/images/outdoor-workout.jpg",
+  "assets/images/post-workout-2.jpg",
+  "assets/images/stock-photo-1.jpg",
+  "assets/images/stock-photo-2.jpg",
+  "assets/images/stock-photo-3.jpg"
 ];

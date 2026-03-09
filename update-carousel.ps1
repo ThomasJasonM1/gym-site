@@ -19,7 +19,7 @@ $images = @(
 )
 
 # Build the JS file
-$fileList = ($images | ForEach-Object { "  `"$_`"" }) -join ",`n"
+$fileList = ($images | ForEach-Object { "  `"assets/carousel/$_`"" }) -join ",`n"
 if ($images.Count -eq 0) { $fileList = "  // No images found — drop .jpg/.png/.webp files into assets\carousel\" }
 
 $content = @"

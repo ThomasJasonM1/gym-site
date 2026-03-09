@@ -114,8 +114,15 @@
         return;
       }
 
-      // Simulate submission success (replace with real fetch/POST when backend is ready)
-      showFormMessage('Thanks, ' + name + '! We\'ll be in touch soon.', 'success');
+      // Open user's mail client pre-filled with the message
+      var subject = encodeURIComponent('Message from ' + name + ' via CountryFit website');
+      var body    = encodeURIComponent(
+        'Name: ' + name + '\n' +
+        'Email: ' + email + '\n\n' +
+        'Message:\n' + message
+      );
+      window.location.href = 'mailto:info@countryfittx.com?subject=' + subject + '&body=' + body;
+
       contactForm.reset();
     });
   }
@@ -165,7 +172,7 @@
       var slide = document.createElement('div');
       slide.className = 'carousel-slide';
       var img = document.createElement('img');
-      img.src = 'assets/carousel/' + filename;
+      img.src = filename;  // full relative path supplied by carousel-config.js
       img.alt = 'Country Fit gym';
       img.loading = 'lazy';
       slide.appendChild(img);

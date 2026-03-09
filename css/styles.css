@@ -442,6 +442,27 @@ h1, h2, h3, h4 {
   color: var(--color-muted);
 }
 
+.class-card--pt {
+  background: var(--color-light);
+}
+
+.class-card--pt .class-time {
+  color: var(--color-secondary);
+}
+
+.class-card--closed {
+  background: var(--color-light);
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem;
+}
+
+.class-card--closed .class-name {
+  color: var(--color-muted);
+  font-weight: 500;
+  text-align: center;
+}
+
 /* Mobile: horizontal scroll on very small screens */
 @media (max-width: 479px) {
   .schedule-grid {
