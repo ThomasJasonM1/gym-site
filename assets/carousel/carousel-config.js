@@ -17,5 +17,8 @@ window.CAROUSEL_IMAGES = [
   "assets/images/carousel/stock-photo-6.jpg",
   "assets/images/carousel/stock-photo-7.jpg",
   "assets/images/carousel/stock-photo-8.jpg",
-  "assets/images/carousel/stock-photo-9.jpg"
+  "assets/images/carousel/stock-photo-9.jpg",
+  "assets/images/carousel/stock-photo-10.jpeg",
+  "assets/images/carousel/stock-photo-11.jpg"
+
 ];
