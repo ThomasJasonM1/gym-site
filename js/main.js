@@ -44,7 +44,7 @@
 
   /* ---- Scroll-spy: highlight active nav link ---- */
   // Build a map of section id → nav link
-  const sectionIds = ['home', 'classes', 'gallery', 'pricing', 'contact'];
+  const sectionIds = ['home', 'gallery', 'classes', 'pricing', 'contact'];
 
   function getNavHeight() {
     return parseInt(
@@ -132,7 +132,7 @@
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (data.ok) {
-          showFormMessage('Thanks, ' + name + '! Your message has been sent — we\'ll be in touch soon.', 'success');
+          showFormMessage('Thanks, ' + name + '! Your message has been sent. We\'ll be in touch soon.', 'success');
           contactForm.reset();
         } else {
           showFormMessage('Something went wrong. Please try again or email us directly at info@countryfittx.com.', 'error');
@@ -153,6 +153,8 @@
   }
 
   function showFormMessage(text, type) {
+    const announce = document.getElementById('formAnnounce');
+
     // Remove any existing message
     const existing = contactForm.querySelector('.form-message');
     if (existing) existing.remove();
@@ -173,9 +175,16 @@
 
     contactForm.appendChild(msg);
 
+    // Mirror text to aria-live region for screen readers
+    if (announce) {
+      announce.textContent = '';
+      announce.textContent = text;
+    }
+
     // Auto-remove after 5 s
     setTimeout(function () {
       msg.remove();
+      if (announce) announce.textContent = '';
     }, 5000);
   }
 
@@ -251,7 +260,10 @@
       startAuto();
     }, { passive: true });
 
-    startAuto();
+    // Respect reduced-motion preference — skip autoplay
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      startAuto();
+    }
   }
 
 })();
