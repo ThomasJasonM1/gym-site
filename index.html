@@ -2,9 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Country Fit</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" />
+  <!-- viewport-fit=cover is required for env(safe-area-inset-*) to resolve to
+       anything but 0. The sticky mobile action bar depends on it. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <title>Country Fit | Group Fitness Classes &amp; Personal Training in Farmersville, TX</title>
+  <meta name="description" content="Small-group fitness classes and personal training in Farmersville, TX. All levels welcome, no experience required. Classes Monday through Saturday. Claim your free class today." />
+
+  <!-- Canonical origin confirmed 2026-08-10: countryfitusa.com has no DNS
+       record. countryfittx.com is the registered domain. Keep this in sync
+       with SITE.origin in js/site-config.js. -->
+  <link rel="canonical" href="https://countryfittx.com/" />
+
+  <meta name="theme-color" content="#111111" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Country Fit" />
+  <meta property="og:title" content="Country Fit | Group Classes &amp; Personal Training in Farmersville, TX" />
+  <meta property="og:description" content="All levels welcome. No experience required. Claim your free class." />
+  <meta property="og:url" content="https://countryfittx.com/" />
+  <!-- TODO(phase 6): produce assets/img/og-cover-1200x630.jpg from the gym photos. -->
+  <meta property="og:image" content="https://countryfittx.com/assets/img/og-cover-1200x630.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Members of Country Fit after a group class in Farmersville, Texas" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" sizes="32x32" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -192,6 +218,7 @@
               <h3 class="info-heading">Address</h3>
               <p>2409 Country Road 645<br />Farmersville, TX 75442</p>
               <a href="https://maps.google.com/maps?q=2409+Country+Road+645,+Farmersville,+TX+75442"
+                 data-link="directions"
                  class="map-link" target="_blank" rel="noopener noreferrer">Get Directions</a>
             </div>
           </div>
@@ -201,8 +228,8 @@
             </div>
             <div class="info-content">
               <h3 class="info-heading">Text &amp; Email</h3>
-              <p><a href="tel:+14693375839">(469) 337-5839</a></p>
-              <p><a href="mailto:info@countryfittx.com">info@countryfittx.com</a></p>
+              <p><a href="tel:+14693375839" data-link="tel">(469) 337-5839</a></p>
+              <p><a href="mailto:info@countryfittx.com" data-link="email">info@countryfittx.com</a></p>
             </div>
           </div>
         </div>
@@ -255,7 +282,7 @@
       <div class="footer-social">
         <h4 class="footer-heading">Follow Us</h4>
         <div class="social-icons">
-          <a href="https://www.facebook.com/profile.php?id=61578892311382" class="social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.facebook.com/profile.php?id=61578892311382" data-link="facebook" class="social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
           </a>
         </div>
@@ -263,6 +290,9 @@
     </div>
   </footer>
 
+  <!-- site-config.js must load before main.js — it defines window.SITE, which
+       syncLinks() reconciles every [data-link] anchor against. -->
+  <script src="js/site-config.js"></script>
   <script src="assets/carousel/carousel-config.js"></script>
   <script src="js/main.js"></script>
 </body>

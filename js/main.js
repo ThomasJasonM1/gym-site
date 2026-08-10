@@ -18,6 +18,57 @@
     footerYear.textContent = new Date().getFullYear();
   }
 
+  /* ---- Link registry reconciliation -------------------------------------
+     Every anchor carries a real literal href (so the page works with JS
+     disabled) AND a data-link token naming its entry in js/site-config.js.
+     This walks them and makes the config authoritative at runtime, so editing
+     site-config.js alone is enough to change behaviour everywhere.
+
+     Drift between a literal and the config is a real bug — the same class of
+     bug that left nine carousel images 404ing — so it is reported loudly
+     during development. Add ?linkcheck=1 to any URL to force the check on.
+     ---------------------------------------------------------------------- */
+  function syncLinks() {
+    if (!window.SITE || !window.SITE.links) return;
+
+    const dev = location.protocol === 'file:' ||
+                /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ||
+                /[?&]linkcheck=1/.test(location.search);
+
+    let checked = 0, drifted = 0;
+
+    document.querySelectorAll('a[data-link]').forEach(function (a) {
+      const key  = a.getAttribute('data-link');
+      const want = window.SITE.links[key];
+
+      if (!want) {
+        if (dev) console.error('[linkcheck] unknown token "' + key + '"', a);
+        return;
+      }
+
+      checked++;
+      if (a.getAttribute('href') !== want) {
+        drifted++;
+        if (dev) {
+          console.warn(
+            '[linkcheck] stale href for "' + key + '"' +
+            '\n  in html: ' + a.getAttribute('href') +
+            '\n  in config: ' + want +
+            '\n  -> using config. Update the literal in index.html.', a
+          );
+        }
+        a.setAttribute('href', want);
+      }
+    });
+
+    if (dev) {
+      console.log('[linkcheck] ' + checked + ' link(s) checked, ' +
+                  drifted + ' drifted.');
+    }
+  }
+
+  syncLinks();
+
   /* ---- Mobile nav toggle ---- */
   if (navToggle && navMenu) {
     navToggle.addEventListener('click', function () {
@@ -46,11 +97,17 @@
   // Build a map of section id → nav link
   const sectionIds = ['home', 'gallery', 'classes', 'pricing', 'contact'];
 
+  /* Measure the navbar rather than parsing the --nav-height token.
+     getPropertyValue() returns the *specified* value, so a token written in
+     any unit other than px silently mis-parses: parseInt('4.25rem') === 4,
+     which breaks scroll-spy with no error. Measuring is also correct when the
+     bar's height changes responsively. */
   function getNavHeight() {
-    return parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue('--nav-height'),
-      10
-    ) || 68;
+    if (navbar) {
+      const h = navbar.getBoundingClientRect().height;
+      if (h > 0) return h;
+    }
+    return 68;
   }
 
   function updateActiveLink() {
