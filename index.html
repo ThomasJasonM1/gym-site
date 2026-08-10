@@ -31,9 +31,13 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" sizes="32x32" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Fonts are self-hosted in assets/fonts/ (62 KB, latin subset). Anton is
+       preloaded because it renders above the fold at up to 100px and its
+       fallback swap causes by far the largest reflow. crossorigin is required
+       even same-origin, or the browser fetches the file twice.
+       NOTE: over file:// Chrome CORS-blocks these and falls back to Impact.
+       Preview with:  python -m http.server 8000 -->
+  <link rel="preload" href="assets/fonts/anton-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -47,27 +51,6 @@
         <a href="#home" class="nav-logo">
           <span class="logo-country">Country</span><span class="logo-fit">Fit</span>
         </a>
-        <div class="nav-flag" aria-hidden="true">
-          <svg viewBox="0 0 190 100" xmlns="http://www.w3.org/2000/svg">
-            <rect width="190" height="100" fill="#b22234"/>
-            <rect y="7.7"  width="190" height="7.7" fill="#fff"/>
-            <rect y="23.1" width="190" height="7.7" fill="#fff"/>
-            <rect y="38.5" width="190" height="7.7" fill="#fff"/>
-            <rect y="53.8" width="190" height="7.7" fill="#fff"/>
-            <rect y="69.2" width="190" height="7.7" fill="#fff"/>
-            <rect y="84.6" width="190" height="7.7" fill="#fff"/>
-            <rect width="76" height="54" fill="#3c3b6e"/>
-            <circle cx="6"  cy="4"  r="2.2" fill="#fff"/><circle cx="18" cy="4"  r="2.2" fill="#fff"/><circle cx="30" cy="4"  r="2.2" fill="#fff"/><circle cx="42" cy="4"  r="2.2" fill="#fff"/><circle cx="54" cy="4"  r="2.2" fill="#fff"/><circle cx="66" cy="4"  r="2.2" fill="#fff"/>
-            <circle cx="12" cy="10" r="2.2" fill="#fff"/><circle cx="24" cy="10" r="2.2" fill="#fff"/><circle cx="36" cy="10" r="2.2" fill="#fff"/><circle cx="48" cy="10" r="2.2" fill="#fff"/><circle cx="60" cy="10" r="2.2" fill="#fff"/>
-            <circle cx="6"  cy="16" r="2.2" fill="#fff"/><circle cx="18" cy="16" r="2.2" fill="#fff"/><circle cx="30" cy="16" r="2.2" fill="#fff"/><circle cx="42" cy="16" r="2.2" fill="#fff"/><circle cx="54" cy="16" r="2.2" fill="#fff"/><circle cx="66" cy="16" r="2.2" fill="#fff"/>
-            <circle cx="12" cy="22" r="2.2" fill="#fff"/><circle cx="24" cy="22" r="2.2" fill="#fff"/><circle cx="36" cy="22" r="2.2" fill="#fff"/><circle cx="48" cy="22" r="2.2" fill="#fff"/><circle cx="60" cy="22" r="2.2" fill="#fff"/>
-            <circle cx="6"  cy="28" r="2.2" fill="#fff"/><circle cx="18" cy="28" r="2.2" fill="#fff"/><circle cx="30" cy="28" r="2.2" fill="#fff"/><circle cx="42" cy="28" r="2.2" fill="#fff"/><circle cx="54" cy="28" r="2.2" fill="#fff"/><circle cx="66" cy="28" r="2.2" fill="#fff"/>
-            <circle cx="12" cy="34" r="2.2" fill="#fff"/><circle cx="24" cy="34" r="2.2" fill="#fff"/><circle cx="36" cy="34" r="2.2" fill="#fff"/><circle cx="48" cy="34" r="2.2" fill="#fff"/><circle cx="60" cy="34" r="2.2" fill="#fff"/>
-            <circle cx="6"  cy="40" r="2.2" fill="#fff"/><circle cx="18" cy="40" r="2.2" fill="#fff"/><circle cx="30" cy="40" r="2.2" fill="#fff"/><circle cx="42" cy="40" r="2.2" fill="#fff"/><circle cx="54" cy="40" r="2.2" fill="#fff"/><circle cx="66" cy="40" r="2.2" fill="#fff"/>
-            <circle cx="12" cy="46" r="2.2" fill="#fff"/><circle cx="24" cy="46" r="2.2" fill="#fff"/><circle cx="36" cy="46" r="2.2" fill="#fff"/><circle cx="48" cy="46" r="2.2" fill="#fff"/><circle cx="60" cy="46" r="2.2" fill="#fff"/>
-            <circle cx="6"  cy="52" r="2.2" fill="#fff"/><circle cx="18" cy="52" r="2.2" fill="#fff"/><circle cx="30" cy="52" r="2.2" fill="#fff"/><circle cx="42" cy="52" r="2.2" fill="#fff"/><circle cx="54" cy="52" r="2.2" fill="#fff"/><circle cx="66" cy="52" r="2.2" fill="#fff"/>
-          </svg>
-        </div>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
         <span class="hamburger-bar"></span>
@@ -90,15 +73,18 @@
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <p class="hero-eyebrow">Your Community. Your Strength.</p>
+      <!-- Star separators are generated in CSS, not typed here. As literal
+           characters a screen reader announces "black star" between every
+           word. Sentence case in the DOM, uppercased in CSS, because VoiceOver
+           spells short all-caps strings out as initialisms. -->
+      <p class="hero-eyebrow eyebrow ribbon">
+        <span>Strength</span><span>Conditioning</span><span>Community</span>
+      </p>
       <h1 class="hero-headline">Come Ready.<br />Leave Proud.</h1>
       <p class="hero-sub">Country Fit is where hard work meets heart. Join a gym that believes in you, your community, and the values that make this country great.</p>
       <a href="#pricing" class="btn btn-primary hero-cta">View Online Training Plans</a>
     </div>
   </section>
-
-  <!-- Patriotic stripe divider -->
-  <div class="patriot-stripe" aria-hidden="true"></div>
 
   <!-- ===== PHOTO GALLERY ===== -->
   <section class="gallery" id="gallery">
@@ -126,22 +112,28 @@
         <p class="section-sub">Your first step starts here. Reserve your spot today.</p>
       </div>
 
-      <div class="schedule-panel schedule-panel--booking">
-        <div class="schedule-panel-icon" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <!-- The board: outlined dark panel with a teal header bar carrying a
+           line icon and an uppercase label. This is the signature component —
+           it is meant to rhyme with the workout boards hanging in the gym.
+           Reused for the class schedule grid in a later phase. -->
+      <article class="board schedule-panel">
+        <div class="board__bar">
+          <svg class="board__icon schedule-panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+          <h3 class="board__label schedule-panel-title">Small Group &amp; Personal Training</h3>
         </div>
-        <h3 class="schedule-panel-title">Small Group &amp; Personal Training</h3>
-        <p class="schedule-panel-desc">
-          Stop waiting for the "right time" and make it happen. Whether you want the energy
-          of a small group or focused one-on-one coaching, we have a session built for you.
-          Spots fill fast, so lock yours in now and show up ready to work.
-        </p>
-        <a href="https://calendar.app.google/srUNRDyaKR49SFWm8"
-           class="btn btn-accent schedule-cta-btn" target="_blank" rel="noopener">
-          Claim Your Spot
-        </a>
-        <a href="#contact" class="schedule-pricing-link">Contact us for pricing</a>
-      </div>
+        <div class="board__body board__body--center">
+          <p class="board__text schedule-panel-desc">
+            Stop waiting for the "right time" and make it happen. Whether you want the energy
+            of a small group or focused one-on-one coaching, we have a session built for you.
+            Spots fill fast, so lock yours in now and show up ready to work.
+          </p>
+          <a href="https://calendar.app.google/srUNRDyaKR49SFWm8"
+             class="btn btn-primary schedule-cta-btn" target="_blank" rel="noopener">
+            Claim Your Spot
+          </a>
+          <a href="#contact" class="link-quiet">Contact us for pricing</a>
+        </div>
+      </article>
     </div>
   </section>
 

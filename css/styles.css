@@ -1,10 +1,235 @@
-/* ============================================================
-   COUNTRY FIT, LLC. — Styles
-   Organized: Reset → Variables → Base → Navbar → Hero →
-              Classes → Pricing → Contact → Footer → Utilities
-   ============================================================ */
+/* ============================================================================
+   COUNTRY FIT, LLC. — Stylesheet
 
-/* ---- Reset ---- */
+   Brand: teal / black / white, hard-edged flat ink, distressed newsprint.
+   Modelled on the workout boards and class posters hanging in the gym.
+
+   Order is the cascade. Do not reshuffle:
+     1  @font-face
+     2  Tokens
+     3  Reset + base
+     4  Accessibility primitives   <- before components, so a component must
+     5  Texture plate                 override a focus ring deliberately
+     6  Layout primitives
+     7  Type utilities
+     8  Components
+     9  Sections
+    10  Print
+
+   HOUSE RULES
+     * No hex literals outside :root. Every colour resolves from a token.
+     * No border-radius, no gradients, no soft shadows. Flat ink, hard edges.
+     * Bone for display and emphasis; gray for running text; never pure white.
+     * Brand teal (--cf-teal) is 2.88:1 on the page background. It is a FILL
+       and DECORATION colour. It must never carry text, never be the only
+       state indicator, and never be a focus ring. Use --cf-teal-bright for
+       anything text-shaped.
+   ========================================================================= */
+
+
+/* ============================================================================
+   1. FONTS — self-hosted, latin subset only, 62.1 KB total
+   ----------------------------------------------------------------------------
+   Chrome treats every file:// document as an opaque origin, so these are
+   CORS-blocked when the page is opened directly from disk and the site falls
+   back to Impact / system-ui. Preview over a local server instead:
+       python -m http.server 8000
+   The gstatic URL is listed as a second src purely as a safety net; it is only
+   reached if the local file fails, so production stays self-hosted.
+   ========================================================================= */
+
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;           /* Anton ships exactly one weight */
+  font-display: swap;
+  src: url('../assets/fonts/anton-latin-400.woff2') format('woff2'),
+       url('https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm3Kz-C8.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2122, U+2605,
+                 U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/barlow-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2122, U+2605,
+                 U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/barlow-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2122, U+2605,
+                 U+FEFF, U+FFFD;
+}
+
+
+/* ============================================================================
+   2. TOKENS
+   ----------------------------------------------------------------------------
+   Three layers: raw channels -> derived opaque -> semantic aliases.
+   Components reference ONLY the semantic layer, so a brand change is a handful
+   of edits at the top of this block.
+   ========================================================================= */
+
+:root {
+
+  /* ---- L1. Raw channels. The only colour literals in this file. ---------- */
+  --cf-black-rgb:        17  17  17;   /* page ground */
+  --cf-panel-rgb:        27  27  27;   /* raised panel */
+  --cf-raised-rgb:       36  36  36;   /* nested surface inside a panel */
+  --cf-teal-deep-rgb:    13  74  73;   /* pressed / recessed */
+  --cf-teal-rgb:          0 104 109;   /* SAMPLED from the in-gym signage */
+  --cf-teal-bright-rgb:  42 166 162;   /* text-safe teal */
+  --cf-bone-rgb:        244 241 236;   /* display type, borders */
+  --cf-gray-rgb:        168 162 155;   /* running text */
+  --cf-ok-rgb:          110 231 183;   /* form success */
+  --cf-danger-rgb:      248 113 113;   /* form error */
+
+  /* ---- L1b. Derived opaque. Cannot desync from the channels above. ------- */
+  --cf-black:       rgb(var(--cf-black-rgb));
+  --cf-panel:       rgb(var(--cf-panel-rgb));
+  --cf-raised:      rgb(var(--cf-raised-rgb));
+  --cf-teal-deep:   rgb(var(--cf-teal-deep-rgb));
+  --cf-teal:        rgb(var(--cf-teal-rgb));
+  --cf-teal-bright: rgb(var(--cf-teal-bright-rgb));
+  --cf-bone:        rgb(var(--cf-bone-rgb));
+  --cf-gray:        rgb(var(--cf-gray-rgb));
+  --cf-ok:          rgb(var(--cf-ok-rgb));
+  --cf-danger:      rgb(var(--cf-danger-rgb));
+
+  /* ---- L2. Alphas, named by intent rather than by number ----------------- */
+  --alpha-rule:       0.22;   /* hairline dividers inside a panel */
+  --alpha-field:      0.40;   /* input borders at rest */
+  --alpha-muted:      0.55;   /* disabled */
+  --alpha-grain:      0.07;   /* high-frequency texture plate */
+  --alpha-mottle:     0.05;   /* low-frequency texture plate */
+  --alpha-hero-scrim: 0.85;   /* MEASURED FLOOR. Below this, gray body copy
+                                 over a blown-out photo region drops under
+                                 4.5:1. Do not lower. */
+
+  /* ---- L3. Semantic. This is the layer components are allowed to use. ---- */
+  --cf-surface-page:          var(--cf-black);
+  --cf-surface-panel:         var(--cf-panel);
+  --cf-surface-raised:        var(--cf-raised);
+  --cf-surface-accent:        var(--cf-teal);       /* FILL ONLY — 2.88:1 */
+  --cf-surface-accent-active: var(--cf-teal-deep);  /* hover darkens, so bone
+                                                       on it climbs to 8.9:1 */
+  --cf-surface-invert:        var(--cf-bone);
+
+  --cf-text-display:   var(--cf-bone);          /* 16.8:1 on page */
+  --cf-text-body:      var(--cf-gray);          /*  7.5:1 page, 6.8:1 panel */
+  --cf-text-strong:    var(--cf-bone);
+  --cf-text-accent:    var(--cf-teal-bright);   /*  6.4:1 — NOT --cf-teal */
+  --cf-text-on-accent: var(--cf-bone);          /*  5.9:1 on the teal bar */
+  --cf-text-on-invert: var(--cf-black);         /* 16.8:1 on bone */
+  --cf-text-muted:     rgb(var(--cf-gray-rgb) / var(--alpha-muted));
+
+  --cf-border-panel:  var(--cf-bone);
+  --cf-border-rule:   rgb(var(--cf-bone-rgb) / var(--alpha-rule));
+  --cf-border-accent: var(--cf-teal-bright);
+  --cf-border-field:  rgb(var(--cf-bone-rgb) / var(--alpha-field));
+
+  /* Bone is the only value clearing 3:1 against ALL of page (16.8), panel
+     (15.3) and the teal bar (5.8). A teal ring would be 2.2:1 on the bar. */
+  --cf-focus-ring: var(--cf-bone);
+  --cf-focus-halo: var(--cf-black);
+
+  --cf-decor: var(--cf-teal);   /* ribbons, arrows, offset blocks */
+
+  /* ---- Geometry. px on purpose — rem hairlines blur at odd zoom levels. -- */
+  --bw-hair:  1px;
+  --bw-1:     2px;
+  --bw-2:     3px;
+  --bw-panel: 3px;
+  --bw-heavy: 6px;
+  --radius:   0;      /* tokenised so nothing hardcodes a corner */
+  --tap-min:  44px;
+
+  /* ---- Spacing. 4px base, geometric above 1.5rem. ------------------------ */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-section: clamp(3rem, 1.24rem + 7.83vw, 7.5rem);   /* 48px -> 120px */
+
+  /* ---- Type -------------------------------------------------------------
+     Two ratios on purpose. Text steps use 1.25 (major third); display steps
+     use 1.414 (root two). One ratio cannot serve both: at 1.414 throughout
+     you skip every useful UI size between 12 and 20px, and at 1.25 the top of
+     the scale stops near 60px, which is not signage. Anton is heavy and
+     condensed, so it reads optically smaller per em than the body face and
+     needs the larger jump just to feel dominant. The ladders meet at 25px.
+
+     Every clamp midpoint keeps a rem intercept. A pure-vw midpoint pins text
+     to the viewport and ignores the user's root font size, failing WCAG 1.4.4
+     (Resize Text). Form is: min + rem intercept + vw slope.
+     -------------------------------------------------------------------- */
+  --fs-2xs:  0.75rem;     /* 12px   micro-caps; tracking adds apparent size */
+  --fs-xs:   0.8rem;      /* 12.8   eyebrow / panel label */
+  --fs-sm:   0.875rem;    /* 14px   dense UI */
+  --fs-base: 1rem;        /* 16px   body */
+  --fs-lead: clamp(1.0625rem, 1.01rem + 0.22vw, 1.1875rem);   /* 17 -> 19 */
+
+  --fs-d4: clamp(1.1875rem, 1.04rem  + 0.65vw, 1.5625rem);    /* 19 -> 25 */
+  --fs-d3: clamp(1.375rem,  1.06rem  + 1.41vw, 2.1875rem);    /* 22 -> 35 */
+  --fs-d2: clamp(1.6875rem, 1.125rem + 2.5vw,  3.125rem);     /* 27 -> 50 */
+  --fs-d1: clamp(2.125rem,  1.22rem  + 4.02vw, 4.4375rem);    /* 34 -> 71 */
+  --fs-d0: clamp(2.625rem,  1.21rem  + 6.3vw,  6.25rem);      /* 42 -> 100 */
+
+  --lh-display: 0.92;    /* Anton is caps-only here; tight but never collides */
+  --lh-tight:   1.25;
+  --lh-body:    1.6;
+
+  --tracking-display: -0.005em;
+  --tracking-label:    0.06em;
+  --tracking-eyebrow:  0.22em;
+
+  --font-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  --font-body:    'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ---- Motion ------------------------------------------------------------ */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition: var(--dur-base) var(--ease-out);
+
+  /* ---- Z-index. Every layer named; no bare integers anywhere below. ------ */
+  --z-under:   -1;
+  --z-texture:  0;
+  --z-content:  1;
+  --z-raised:  10;
+  --z-nav:    100;
+  --z-menu:   200;
+  --z-bar:    800;   /* sticky mobile action bar (phase 2) */
+  --z-skip:   900;
+
+  /* ---- Layout ------------------------------------------------------------ */
+  --nav-height: 68px;
+  --measure:    62ch;      /* body-copy line-length cap */
+  --container:  75rem;     /* 1200px */
+}
+
+/* Breakpoints are min-width only, mobile first. No build step means no
+   @custom-media, so they are written out below. For reference:
+     sm 30rem/480   md 48rem/768   lg 64rem/1024   xl 80rem/1280            */
+
+
+/* ============================================================================
+   3. RESET + BASE
+   ========================================================================= */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -13,16 +238,26 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
-img, iframe {
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  color: var(--cf-text-body);
+  background: var(--cf-surface-page);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg, iframe, picture, video {
   display: block;
   max-width: 100%;
 }
 
-ul {
-  list-style: none;
-}
+ul { list-style: none; }
 
 a {
   color: inherit;
@@ -34,1030 +269,777 @@ button {
   border: none;
   background: none;
   font: inherit;
+  color: inherit;
 }
 
-/* ---- CSS Custom Properties ---- */
-:root {
-  --color-primary:   #b22234;
-  --color-secondary: #3c3b6e;
-  --color-accent:    #ffffff;
-  --color-dark:      #0d0e1a;
-  --color-light:     #f4f6fb;
-  --color-text:      #1a1a2e;
-  --color-muted:     #6c757d;
-  --font-base:       'Inter', sans-serif;
-  --radius:          8px;
-  --shadow:          0 4px 24px rgba(0, 0, 0, 0.12);
-  --nav-height:      68px;
-  --transition:      0.25s ease;
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;          /* Anton has no bold. See font-synthesis below. */
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  color: var(--cf-text-display);
+  /* Faux-bold smears Anton's already-heavy strokes into mush. */
+  font-synthesis: none;
 }
 
-/* ---- Skip link ---- */
+::selection {
+  background: var(--cf-surface-accent);
+  color: var(--cf-text-on-accent);
+}
+
+section { scroll-margin-top: var(--nav-height); }
+
+
+/* ============================================================================
+   4. ACCESSIBILITY PRIMITIVES
+   Deliberately before components so any override is a conscious act.
+   ========================================================================= */
+
+/* Two-tone ring: [element][3px black halo][3px bone ring].
+   Bone reads on the page (16.8), on a panel (15.3) and on the teal bar (5.8);
+   the black halo separates it from a panel's own bone border. */
+:focus-visible {
+  outline: var(--bw-2) solid var(--cf-focus-ring);
+  outline-offset: var(--bw-2);
+  box-shadow: 0 0 0 var(--bw-2) var(--cf-focus-halo);
+  border-radius: var(--radius);
+}
+
 .skip-link {
   position: absolute;
   top: -100%;
-  left: 1rem;
-  background: var(--color-primary);
-  color: #fff;
-  padding: 0.5rem 1.25rem;
-  border-radius: 0 0 var(--radius) var(--radius);
-  font-weight: 700;
-  font-size: 0.9rem;
-  z-index: 9999;
-  text-decoration: none;
+  left: var(--space-sm);
+  z-index: var(--z-skip);
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2xs) var(--space-md);
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
-.skip-link:focus {
-  top: 0;
-  outline: 3px solid #fff;
-  outline-offset: 2px;
+.skip-link:focus { top: 0; }
+
+/* Expands a small control's hit area to 44px without changing how big it
+   looks. No pointer-events:none — catching the tap is the entire point. */
+.u-tap { position: relative; }
+.u-tap::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  width: 100%;
+  height: 100%;
 }
 
-/* ---- Focus visible ---- */
-:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 3px;
-  border-radius: 2px;
+/* Visually hidden but still announced. */
+.u-sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-/* White outline on dark-background sections */
-.navbar :focus-visible,
-.hero :focus-visible,
-.gallery :focus-visible,
-.classes :focus-visible,
-.contact :focus-visible,
-.footer :focus-visible {
-  outline-color: #fff;
-}
-
-/* Form inputs use box-shadow indicator instead */
-.form-group input:focus-visible,
-.form-group textarea:focus-visible {
-  outline: none;
-}
-
-/* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  html {
-    scroll-behavior: auto;
+  html { scroll-behavior: auto; }
+  /* Zeroing durations does not stop a translate from applying instantly, so
+     the lifts are cancelled explicitly. Colour cues survive. */
+  .btn:hover,
+  .board:hover,
+  .pricing-card:hover,
+  .social-icon:hover { translate: none; }
+}
+
+/* Nothing may depend on texture or on a colour tier that is merely adequate.
+   Overriding the RAW CHANNELS means every derived and semantic token updates
+   for free — the payoff for the three-layer structure. */
+@media (prefers-contrast: more) {
+  :root {
+    --cf-text-body:    var(--cf-bone);   /* 7.5:1 -> 16.8:1 */
+    --cf-teal-rgb:     11 62 64;         /* darker bar; bone climbs past 10:1 */
+    --cf-border-rule:  var(--cf-bone);
+    --cf-border-field: var(--cf-bone);
+    --alpha-muted:     0.75;
+    --bw-panel:        4px;
   }
+  body::before, body::after { opacity: 0; }
+  .ribbon { clip-path: none; }
 }
 
-/* ---- Base ---- */
-body {
-  font-family: var(--font-base);
-  font-size: 1rem;
-  color: var(--color-text);
-  background: var(--color-accent);
-  line-height: 1.6;
-  overflow-x: hidden;
+/* Windows High Contrast. Not in the brief, but this is a Windows shop. */
+@media (forced-colors: active) {
+  body::before, body::after { display: none; }
+  .board, .pricing-card, .contact-form-wrapper { border-color: CanvasText; }
+  .board__bar { background: Canvas; border-block-end-color: CanvasText; }
+  .ribbon { clip-path: none; background: Canvas; border: var(--bw-1) solid CanvasText; }
+  :focus-visible { outline-color: Highlight; box-shadow: none; }
 }
 
-h1, h2, h3, h4 {
-  line-height: 1.2;
-  font-weight: 700;
+
+/* ============================================================================
+   5. TEXTURE PLATE
+   ----------------------------------------------------------------------------
+   Two fixed, non-interactive layers pinned BELOW every content root, so text
+   can only ever land on flat colour.
+
+   INVARIANT: any element that renders text must resolve to an opaque
+   background — its own, or an opaque ancestor. Panels satisfy this with
+   --cf-surface-panel; bare text on the page ground is fine because the plate
+   sits behind the content layer, not in front of it.
+
+   position:fixed is used rather than background-attachment:fixed, which iOS
+   ignores and which janks elsewhere. It only resolves against the viewport
+   while NO ancestor has transform / filter / perspective / will-change /
+   contain:paint — so never put a filter on html or body.
+   ========================================================================= */
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-texture);
+  pointer-events: none;
+  background-repeat: repeat;
 }
 
-/* ---- Shared Layout ---- */
+/* Different frequencies AND different periods, so the two repeats rarely
+   coincide and the eye never locks onto a grid. */
+body::before {
+  background-image: url('../assets/textures/grain-128.png');
+  background-size: 128px 128px;
+  opacity: var(--alpha-grain);
+}
+
+body::after {
+  background-image: url('../assets/textures/mottle-256.png');
+  background-size: 256px 256px;
+  opacity: var(--alpha-mottle);
+}
+
+/* Four selectors lift every content root above the plate. Deterministic, and
+   no per-component z-index bookkeeping. */
+.skip-link,
+.navbar,
+main,
+.footer {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+
+/* ============================================================================
+   6. LAYOUT PRIMITIVES
+   ========================================================================= */
+
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--container);
   margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: var(--space-md);
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-xl);
 }
+
+.board-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48rem) { .board-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 64rem) { .board-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Subgrid keeps every teal bar on a row the same height even when one label
+   wraps to two lines. Without it the bars stagger and the "wall of boards"
+   read collapses. */
+@supports (grid-template-rows: subgrid) {
+  .board-grid { grid-auto-rows: auto 1fr; }
+  .board-grid > .board { grid-row: span 2; grid-template-rows: subgrid; }
+}
+
+
+/* ============================================================================
+   7. TYPE UTILITIES
+   ========================================================================= */
 
 .section-title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  color: var(--color-secondary);
-  position: relative;
-  display: inline-block;
-  padding-bottom: 0.5rem;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 56px;
-  height: 4px;
-  background: var(--color-primary);
-  border-radius: 2px;
+  font-size: var(--fs-d2);
+  color: var(--cf-text-display);
 }
 
 .section-sub {
-  margin-top: 0.75rem;
-  color: var(--color-muted);
-  font-size: 1.05rem;
+  margin-top: var(--space-xs);
+  color: var(--cf-text-body);
+  font-size: var(--fs-lead);
+  max-width: var(--measure);
+  margin-inline: auto;
 }
 
-/* ---- Buttons ---- */
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius);
+/* Letterspaced small caps. Keep to short strings — heavy tracking measurably
+   slows low-vision reading, so it never goes on running text. */
+.eyebrow {
+  font-family: var(--font-body);
   font-weight: 600;
-  font-size: 0.95rem;
-  transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--cf-text-strong);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Star separators live in CSS, not the DOM. Typed into HTML they are read out
+   as "black star" between every word. The  / ""  gives the generated content
+   empty alt text; browsers without that syntax drop the declaration entirely
+   and simply show no separator, which is a safe degradation. */
+.eyebrow > * + *::before {
+  content: "\2605" / "";
+  color: var(--cf-decor);
+  margin-inline: 0.7em;
+  font-size: 0.9em;
+  letter-spacing: 0;
+}
+
+/* On a teal ribbon a teal star would be invisible. */
+.eyebrow.ribbon > * + *::before { color: var(--cf-text-on-accent); }
+
+/* .ribbon is inline-block; .eyebrow is flex. Combined, keep both. */
+.eyebrow.ribbon { display: inline-flex; }
+
+/* Torn-edge ribbon behind a heading.
+   Y offsets in px, X in %, so the tear DEPTH stays constant as the ribbon
+   stretches. An all-% polygon scales the amplitude with width and reads wrong
+   on wide headings.
+   clip-path swallows an element's focus outline, so a ribbon must never be
+   focusable; use .ribbon--link if a heading inside it is a link. */
+.ribbon {
+  display: inline-block;
+  padding: var(--space-2xs) var(--space-md);
+  background: var(--cf-decor);
+  color: var(--cf-text-on-accent);
+  clip-path: polygon(
+      0%   5px,   2% 0px,   16%  6px,  31% 1px,  47% 7px,
+     63%   2px,  78% 7px,   92%  2px, 100% 6px,
+    100% calc(100% - 5px),  86% 100%,  71% calc(100% - 6px),
+     56% 100%,  40% calc(100% - 7px),  25% 100%,
+     11% calc(100% - 6px),  0% calc(100% - 2px)
+  );
+}
+
+.ribbon--link {
+  position: relative;
+  isolation: isolate;
+  background: none;
+  clip-path: none;
+}
+
+.ribbon--link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-under);
+  background: var(--cf-decor);
+  clip-path: polygon(
+      0%   5px,   2% 0px,   16%  6px,  31% 1px,  47% 7px,
+     63%   2px,  78% 7px,   92%  2px, 100% 6px,
+    100% calc(100% - 5px),  86% 100%,  71% calc(100% - 6px),
+     56% 100%,  40% calc(100% - 7px),  25% 100%,
+     11% calc(100% - 6px),  0% calc(100% - 2px)
+  );
+}
+
+
+/* ============================================================================
+   8. COMPONENTS
+   ========================================================================= */
+
+/* ---- 8a. Buttons -------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-xs) var(--space-lg);
+  border-radius: var(--radius);
+  border: var(--bw-1) solid transparent;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
   text-align: center;
-  white-space: nowrap;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), translate var(--transition),
+              box-shadow var(--transition);
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+/* Hard offset block, zero blur. Not a drop shadow — this brand has none. */
+@media (hover: hover) {
+  .btn:hover {
+    translate: -2px -2px;
+    box-shadow: 2px 2px 0 0 var(--cf-black);
+  }
 }
 
+.btn:active { translate: 0 0; box-shadow: none; }
+
+/* Bone fill, black label: 16.8:1. The loudest thing on the page. */
 .btn-primary {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
+  border-color: var(--cf-surface-invert);
 }
 
 .btn-primary:hover {
-  background: #961c2a;
+  background: var(--cf-teal-bright);
+  border-color: var(--cf-teal-bright);
+  color: var(--cf-text-on-invert);   /* black on bright teal = 6.4:1 */
+}
+
+/* Teal fill, bone label: 5.9:1. */
+.btn-accent {
+  background: var(--cf-surface-accent);
+  color: var(--cf-text-on-accent);
+  border-color: var(--cf-border-panel);
+}
+
+/* Hover DARKENS. Nudging teal toward bright teal would be a 1.5:1 shift and
+   effectively invisible; darkening lifts bone on it to 8.9:1. */
+.btn-accent:hover {
+  background: var(--cf-surface-accent-active);
+  color: var(--cf-text-on-accent);
 }
 
 .btn-outline {
   background: transparent;
-  color: var(--color-secondary);
-  border: 2px solid var(--color-secondary);
+  color: var(--cf-text-strong);
+  border-color: var(--cf-border-panel);
 }
 
 .btn-outline:hover {
-  background: var(--color-secondary);
-  color: #fff;
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
 }
 
-.btn-accent {
-  background: #fff;
-  color: var(--color-primary);
-  font-weight: 700;
+/* Quiet text link, underlined so it does not rely on colour alone. */
+.link-quiet {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--cf-text-accent);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: var(--bw-hair);
 }
 
-.btn-accent:hover {
-  background: #f0f0f0;
+.link-quiet:hover {
+  color: var(--cf-text-strong);
+  text-decoration-thickness: var(--bw-1);
 }
 
-/* ============================================================
-   NAVBAR
-   ============================================================ */
+
+/* ---- 8b. The board — signature component -------------------------------
+   Thick bone-outlined dark panel, teal header bar carrying a line icon and an
+   uppercase label. This is the element the site should be remembered by; it
+   is meant to rhyme with the workout boards hanging in the gym.
+
+   NEVER add overflow:hidden or clip-path to .board. Both clip the offset
+   focus outline of anything inside it.
+   ---------------------------------------------------------------------- */
+
+.board {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--cf-surface-panel);   /* opaque — keeps text off texture */
+  border: var(--bw-panel) solid var(--cf-border-panel);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), box-shadow var(--transition),
+              translate var(--transition);
+}
+
+.board__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: var(--tap-min);
+  padding: var(--space-2xs) var(--space-xs);
+  background: var(--cf-surface-accent);
+  color: var(--cf-text-on-accent);
+  /* LOAD-BEARING. Teal on panel is 2.63:1, so the bar is separated from the
+     body by this bone rule, not by its fill colour. Do not remove. */
+  border-block-end: var(--bw-panel) solid var(--cf-border-panel);
+}
+
+.board__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+}
+
+.board__label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-d4);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--cf-text-on-accent);
+}
+
+.board__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-sm) var(--space-sm);
+  color: var(--cf-text-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+}
+
+.board__body--center {
+  align-items: center;
+  text-align: center;
+}
+
+.board__text {
+  max-width: var(--measure);
+  margin: 0;
+}
+
+.board__rule {
+  width: 100%;
+  height: 0;
+  border-block-start: var(--bw-hair) solid var(--cf-border-rule);
+}
+
+/* Three simultaneous hover cues, so the 2.88:1 teal is never the only
+   affordance: bright-teal edge, a lift, and a hard offset block. */
+@media (hover: hover) {
+  .board--link:hover {
+    border-color: var(--cf-border-accent);
+    translate: -3px -3px;
+    box-shadow: 3px 3px 0 0 var(--cf-decor);
+  }
+}
+
+.board--link { position: relative; }
+.board--link .board__cta::after { content: ''; position: absolute; inset: 0; }
+
+
+/* ---- 8c. Forms ---------------------------------------------------------- */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.form-group label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--cf-text-strong);
+}
+
+.form-group input,
+.form-group textarea {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  min-height: var(--tap-min);
+  padding: var(--space-2xs) var(--space-xs);
+  border: var(--bw-1) solid var(--cf-border-field);
+  border-radius: var(--radius);
+  color: var(--cf-text-strong);
+  background: var(--cf-surface-raised);
+  transition: border-color var(--transition);
+  resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--cf-text-muted); }
+
+.form-group input:hover,
+.form-group textarea:hover { border-color: var(--cf-border-panel); }
+
+/* No outline:none escape hatch here. The two-tone ring reads fine on a dark
+   input, and suppressing it would be a downgrade with no upside. */
+.form-group input:focus,
+.form-group textarea:focus { border-color: var(--cf-border-accent); }
+
+/* Status messages. Built by js/main.js, which used to inject these colours as
+   inline styles; they belong here. */
+.form-message {
+  margin-top: var(--space-xs);
+  padding: var(--space-2xs) var(--space-sm);
+  border: var(--bw-hair) solid;
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.form-message--success {
+  background: var(--cf-surface-raised);
+  color: var(--cf-ok);
+  border-color: var(--cf-ok);
+}
+
+.form-message--error {
+  background: var(--cf-surface-raised);
+  color: var(--cf-danger);
+  border-color: var(--cf-danger);
+}
+
+
+/* ---- 8d. Navbar --------------------------------------------------------- */
+
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000;
-  background: var(--color-dark);
+  z-index: var(--z-nav);
   height: var(--nav-height);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-  transition: background var(--transition);
+  background: var(--cf-surface-page);
+  border-block-end: var(--bw-1) solid var(--cf-border-rule);
 }
 
 .nav-container {
-  max-width: 1200px;
+  max-width: var(--container);
   margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: var(--space-md);
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
 }
 
 .nav-logo {
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: baseline;
-  gap: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-synthesis: none;
 }
 
-.logo-country {
-  color: var(--color-accent);
-}
+.logo-country { color: var(--cf-text-display); }
+.logo-fit     { color: var(--cf-text-accent); margin-inline-start: 0.22em; }
 
-.logo-fit {
-  color: var(--color-primary);
-}
-
-.logo-llc {
-  color: var(--color-muted);
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-/* Desktop nav links */
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-3xs);
 }
 
 .nav-link {
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.92rem;
-  font-weight: 500;
-  padding: 0.45rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2xs) var(--space-xs);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--cf-text-body);
   border-radius: var(--radius);
-  transition: color var(--transition), background var(--transition);
+  transition: color var(--transition);
   position: relative;
 }
 
+/* Active state is a bone underline plus a colour lift, never teal alone —
+   teal on the page ground is 2.88:1 and cannot carry state. main.js also sets
+   aria-current, so the state is exposed non-visually too. */
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: -2px;
-  left: 0.9rem;
-  right: 0.9rem;
-  height: 2px;
-  background: var(--color-primary);
-  border-radius: 1px;
-  transform: scaleX(0);
-  transition: transform var(--transition);
+  left: var(--space-xs);
+  right: var(--space-xs);
+  bottom: 0.7rem;
+  height: var(--bw-1);
+  background: var(--cf-text-strong);
+  scale: 0 1;
+  transition: scale var(--transition);
 }
 
 .nav-link:hover,
-.nav-link.active {
-  color: #fff;
-}
+.nav-link.active { color: var(--cf-text-strong); }
 
 .nav-link:hover::after,
-.nav-link.active::after {
-  transform: scaleX(1);
-}
+.nav-link.active::after { scale: 1 1; }
 
-/* Hamburger */
 .nav-toggle {
   display: none;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 5px;
-  padding: 0.4rem;
+  width: var(--tap-min);
+  height: var(--tap-min);
   border-radius: var(--radius);
 }
 
 .hamburger-bar {
   display: block;
   width: 24px;
-  height: 2px;
-  background: #fff;
-  border-radius: 2px;
+  height: var(--bw-1);
+  background: var(--cf-text-strong);
   transition: transform var(--transition), opacity var(--transition);
 }
 
-/* Mobile nav */
-@media (max-width: 767px) {
-  .nav-toggle {
-    display: flex;
-  }
+@media (max-width: 47.9375rem) {
+  .nav-toggle { display: flex; }
 
   .nav-menu {
     position: absolute;
     top: var(--nav-height);
     left: 0;
     width: 100%;
-    background: var(--color-dark);
+    z-index: var(--z-menu);
+    background: var(--cf-surface-page);
+    border-block-end: var(--bw-panel) solid var(--cf-border-panel);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: 0.5rem 1rem 1rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: var(--space-2xs) var(--space-md) var(--space-md);
     display: none;
   }
 
-  .nav-menu.open {
-    display: flex;
-  }
+  .nav-menu.open { display: flex; }
 
   .nav-link {
-    padding: 0.75rem 0.5rem;
-    font-size: 1rem;
-    border-radius: 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: var(--space-xs) var(--space-3xs);
+    font-size: var(--fs-sm);
+    border-block-end: var(--bw-hair) solid var(--cf-border-rule);
   }
 
-  .nav-link::after {
-    display: none;
-  }
+  .nav-link::after { display: none; }
+  .nav-link.active { color: var(--cf-text-accent); }
 
-  .nav-link:hover,
-  .nav-link.active {
-    color: #fff;
-    background: transparent;
-  }
-
-  /* Hamburger → X animation */
   .nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
   }
-  .nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(2) {
-    opacity: 0;
-  }
+  .nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(2) { opacity: 0; }
   .nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
   }
 }
 
-/* ============================================================
-   HERO
-   ============================================================ */
+
+/* ============================================================================
+   9. SECTIONS
+   ========================================================================= */
+
+/* ---- 9a. Hero ----------------------------------------------------------- */
+
 .hero {
   position: relative;
-  min-height: 100vh;
+  /* svh, not vh. On mobile vh resolves to the LARGE viewport, so the bottom of
+     the hero — where the primary CTA lives — sits behind browser chrome. */
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  background:
-    url('../assets/images/hero-bg.jpg') center/cover no-repeat,
-    linear-gradient(135deg, var(--color-dark) 0%, var(--color-secondary) 100%);
   padding-top: var(--nav-height);
+  background: var(--cf-surface-page)
+              url('../assets/images/hero-bg.jpg') center / cover no-repeat;
 }
 
+@supports not (min-height: 100svh) {
+  .hero { min-height: 100vh; }
+}
+
+/* Flat scrim, not a gradient. 0.85 is a measured floor: below it, gray body
+   copy over a blown-out region of the photo drops under 4.5:1. */
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    160deg,
-    rgba(13, 14, 26, 0.82) 0%,
-    rgba(60, 59, 110, 0.72) 50%,
-    rgba(178, 34, 52, 0.35) 100%
-  );
+  background: rgb(var(--cf-black-rgb) / var(--alpha-hero-scrim));
+}
+
+/* The hero sits inside main, so it paints above the global texture plate and
+   the photo stays clean. This gives the hero its own grain back. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url('../assets/textures/grain-128.png') repeat;
+  background-size: 128px 128px;
+  opacity: var(--alpha-grain);
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
-  max-width: 780px;
-  padding-inline: 1.5rem;
+  z-index: var(--z-content);
+  max-width: 48rem;
+  padding-inline: var(--space-md);
 }
 
-.hero-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 1rem;
-}
+.hero-eyebrow { margin-bottom: var(--space-sm); }
 
 .hero-headline {
-  font-size: clamp(2.6rem, 8vw, 5rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.08;
-  margin-bottom: 1.25rem;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  font-size: var(--fs-d0);
+  color: var(--cf-text-display);
+  margin-bottom: var(--space-sm);
 }
 
 .hero-sub {
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
-  color: rgba(255, 255, 255, 0.82);
-  max-width: 560px;
+  font-size: var(--fs-lead);
+  color: var(--cf-text-body);
+  max-width: 34rem;
   margin-inline: auto;
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--space-md);
 }
 
-.hero-cta {
-  font-size: 1.05rem;
-  padding: 0.9rem 2.25rem;
-}
-
-/* ============================================================
-   CLASS SCHEDULES
-   ============================================================ */
-.classes {
-  background: var(--color-light);
-  padding: 5rem 0;
-}
-
-.schedule-panel {
-  background: var(--color-secondary);
-  border: none;
-  border-radius: 12px;
-  padding: 3.5rem 2.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem;
-  max-width: 640px;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 16px 56px rgba(13, 14, 26, 0.2);
-}
-
-.schedule-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: var(--color-primary);
-}
-
-.schedule-panel-icon {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  width: 68px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.schedule-panel-title {
-  font-size: 1.65rem;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.2;
-}
-
-.schedule-panel-desc {
-  font-size: 0.97rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.72);
-  max-width: 480px;
-}
-
-.schedule-cta-btn {
-  padding: 0.9rem 2.5rem;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.schedule-pricing-link {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
-  text-decoration: underline;
-}
-
-.schedule-pricing-link:hover {
-  color: #fff;
-}
-
-/* ============================================================
-   PRICING
-   ============================================================ */
-.pricing {
-  background: #fff;
-  padding: 5rem 0;
-}
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.75rem;
-  align-items: stretch;
-  max-width: 1100px;
-  margin-inline: auto;
-}
-
-@media (min-width: 768px) {
-  .pricing-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .pricing-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  .pricing-grid .pricing-card:nth-child(1),
-  .pricing-grid .pricing-card:nth-child(2),
-  .pricing-grid .pricing-card:nth-child(3) {
-    grid-column: span 2;
-  }
-  .pricing-grid .pricing-card:nth-child(4) {
-    grid-column: 2 / span 2;
-  }
-  .pricing-grid .pricing-card:nth-child(5) {
-    grid-column: 4 / span 2;
-  }
-}
-
-.pricing-card {
-  border: 2px solid var(--color-secondary);
-  border-radius: var(--radius);
-  padding: 2.25rem 1.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0;
-  transition: box-shadow var(--transition), transform var(--transition);
-  position: relative;
-  background: #fff;
-}
-
-.pricing-card:hover {
-  box-shadow: var(--shadow);
-  transform: translateY(-4px);
-}
-
-.pricing-card--popular,
-.pricing-card--featured {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-  box-shadow: 0 8px 40px rgba(178, 34, 52, 0.35);
-}
-
-.pricing-card--popular:hover,
-.pricing-card--featured:hover {
-  transform: translateY(-4px);
-}
-
-.popular-badge {
-  position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-secondary);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 0.3rem 0.9rem;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.pricing-tier {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
-  opacity: 0.9;
-}
-
-.pricing-price {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.1rem;
-}
-
-.price-dollar {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-top: 0.6rem;
-}
-
-.price-period {
-  font-size: 1rem;
-  font-weight: 500;
-  align-self: flex-end;
-  margin-bottom: 0.4rem;
-  opacity: 0.7;
-}
-
-.pricing-features {
-  width: 100%;
-  text-align: left;
-  margin-bottom: 2rem;
-  flex: 1;
-}
-
-.pricing-features li {
-  padding: 0.45rem 0;
-  font-size: 0.9rem;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.pricing-card--popular .pricing-features li {
-  border-bottom-color: rgba(255,255,255,0.2);
-}
-
-.pricing-features li::before {
-  content: '✓';
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-secondary);
-  flex-shrink: 0;
-}
-
-.pricing-card--popular .pricing-features li::before {
-  color: rgba(255,255,255,0.9);
-}
-
-.pricing-features li.feature-missing {
-  opacity: 0.4;
-}
-
-.pricing-features li.feature-missing::before {
-  content: '✕';
-  color: currentColor;
-}
-
-.popular-badge--alt {
-  background: var(--color-primary);
-}
-
-.pricing-desc {
-  font-size: 0.88rem;
-  line-height: 1.55;
-  opacity: 0.85;
-  margin-bottom: 1.75rem;
-  flex: 1;
-}
-
-.pricing-card--featured .pricing-desc {
-  opacity: 0.9;
-}
-
-/* Promo pricing */
-.pricing-promo-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.price-original {
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-decoration: line-through;
-  opacity: 0.55;
-  line-height: 1;
-  margin-bottom: 0.15rem;
-}
-
-.price-note {
-  font-size: 0.8rem;
-  font-weight: 500;
-  opacity: 0.8;
-  margin-top: 0.4rem;
-}
-
-/* Contact pricing */
-.pricing-contact-block {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  min-height: 4.5rem;
-}
-
-.contact-pricing-text {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--color-secondary);
-  text-align: center;
-  line-height: 1.3;
-}
-
-/* ============================================================
-   CONTACT / LOCATION
-   ============================================================ */
-.contact {
-  background: var(--color-secondary);
-  padding: 5rem 0;
-}
-
-.contact .section-title {
-  color: #fff;
-}
-
-.contact .section-title::after {
-  background: var(--color-primary);
-}
-
-.contact .section-sub {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-}
+.hero-cta { font-size: var(--fs-base); padding-inline: var(--space-xl); }
 
-@media (min-width: 768px) {
-  .contact-grid {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-}
-
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.info-block {
-  display: flex;
-  gap: 1.25rem;
-  align-items: flex-start;
-}
-
-.info-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.info-heading {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
-  margin-bottom: 0.1rem;
-}
-
-.info-content p {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
-  line-height: 1.65;
-}
-
-.info-content a:not(.map-link) {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.info-content a:not(.map-link):hover {
-  color: #fff;
-}
-
-.hours-table {
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.hours-table td {
-  padding: 0.25rem 1.5rem 0.25rem 0;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.hours-table td:first-child {
-  font-weight: 600;
-  color: #fff;
-}
-
-/* Contact form card */
-.contact-form-wrapper {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2.5rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.contact-form-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--color-secondary);
-  margin-bottom: 0.4rem;
-}
-
-.contact-form-sub {
-  font-size: 0.88rem;
-  color: var(--color-muted);
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.form-group label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-secondary);
-  letter-spacing: 0.3px;
-}
-
-.form-group input,
-.form-group textarea {
-  font-family: var(--font-base);
-  font-size: 0.95rem;
-  padding: 0.7rem 0.9rem;
-  border: 1.5px solid #d1d5db;
-  border-radius: var(--radius);
-  color: var(--color-text);
-  background: #f9fafb;
-  transition: border-color var(--transition), box-shadow var(--transition);
-  resize: vertical;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px rgba(60, 59, 110, 0.12);
-  background: #fff;
-}
-
-.contact-submit-btn {
-  width: 100%;
-  margin-top: 0.5rem;
-}
-
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-.footer {
-  background: var(--color-dark);
-  color: rgba(255, 255, 255, 0.75);
-  padding: 3rem 0 2rem;
-}
-
-.footer-inner {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-}
-
-@media (min-width: 640px) {
-  .footer-inner {
-    grid-template-columns: 2fr 1fr 1fr;
-    align-items: start;
-  }
-}
-
-.footer-brand .nav-logo {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-  display: inline-flex;
-}
-
-.footer-tagline {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.65);
-  margin: 0.35rem 0 0.75rem;
-  font-style: italic;
-}
-
-.footer-copy {
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.6);
-}
-
-.footer-heading {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0.85rem;
-}
-
-.footer-links ul {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.footer-links a {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.65);
-  transition: color var(--transition);
-}
-
-.footer-links a:hover {
-  color: #fff;
-}
-
-.social-icons {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
 
-.social-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.7);
-  transition: background var(--transition), color var(--transition), transform var(--transition);
-}
-
-.social-icon:hover {
-  background: var(--color-primary);
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-/* ============================================================
-   PATRIOTIC STRIPE DIVIDER
-   ============================================================ */
-.patriot-stripe {
-  height: 8px;
-  background: linear-gradient(
-    90deg,
-    var(--color-primary)   0%,   var(--color-primary)   33.33%,
-    var(--color-accent)    33.33%, var(--color-accent)  66.66%,
-    var(--color-secondary) 66.66%, var(--color-secondary) 100%
-  );
-}
-
-/* ============================================================
-   NAV FLAG (next to logo)
-   ============================================================ */
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.nav-flag {
-  width: 46px;
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.5);
-  flex-shrink: 0;
-  line-height: 0;
-  border: 1px solid rgba(255,255,255,0.15);
-}
-
-.nav-flag svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
+/* ---- 9b. Gallery / carousel --------------------------------------------
+   Restyled only. This whole block, and the JS behind it, is removed in the
+   photos phase and replaced with a scroll-snap strip that becomes a grid.
+   ---------------------------------------------------------------------- */
 
-@media (max-width: 380px) {
-  .nav-flag { display: none; }
-}
-
-/* ============================================================
-   PHOTO CAROUSEL
-   ============================================================ */
-.gallery {
-  background: var(--color-dark);
-  padding: 5rem 0;
-}
-
-.gallery .section-header {
-  padding-bottom: 2.5rem;
-}
-
-.gallery .section-title {
-  color: #fff;
-}
-
-.gallery .section-title::after {
-  background: var(--color-primary);
-}
-
-.gallery .section-sub {
-  color: rgba(255,255,255,0.55);
-}
+.gallery { padding-block: var(--space-section); }
 
 .carousel {
   position: relative;
@@ -1066,22 +1048,22 @@ h1, h2, h3, h4 {
   min-height: 240px;
   max-height: 680px;
   overflow: hidden;
-  background: #111;
+  background: var(--cf-surface-panel);
+  border: var(--bw-panel) solid var(--cf-border-panel);
   user-select: none;
 }
 
 .carousel-track {
   display: flex;
   height: 100%;
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.6s var(--ease-out);
 }
 
 .carousel-slide {
   flex: 0 0 100%;
-  width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #111;
+  background: var(--cf-surface-panel);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1091,83 +1073,471 @@ h1, h2, h3, h4 {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
 }
 
-/* Prev / Next buttons */
 .carousel-btn {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  background: rgba(13, 14, 26, 0.52);
-  color: #fff;
-  border: 2px solid rgba(255,255,255,0.28);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 1.7rem;
-  line-height: 1;
+  translate: 0 -50%;
+  z-index: var(--z-raised);
+  width: var(--tap-min);
+  height: var(--tap-min);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background var(--transition), border-color var(--transition);
-  backdrop-filter: blur(6px);
+  font-size: 1.6rem;
+  line-height: 1;
+  background: var(--cf-surface-page);
+  color: var(--cf-text-strong);
+  border: var(--bw-1) solid var(--cf-border-panel);
+  border-radius: var(--radius);
+  transition: background var(--transition), color var(--transition);
 }
 
 .carousel-btn:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
 }
 
-.carousel-btn--prev { left: 1rem; }
-.carousel-btn--next { right: 1rem; }
+.carousel-btn--prev { left: var(--space-2xs); }
+.carousel-btn--next { right: var(--space-2xs); }
 
-/* Dot indicators */
 .carousel-dots {
   position: absolute;
-  bottom: 1rem;
+  bottom: var(--space-3xs);
   left: 50%;
-  transform: translateX(-50%);
+  translate: -50% 0;
+  z-index: var(--z-raised);
   display: flex;
-  gap: 0.45rem;
-  z-index: 10;
+  gap: var(--space-3xs);
 }
 
+/* 44px hit area with a small visual mark. Sized and anchored so the target
+   stays inside the carousel box, which is overflow:hidden. */
 .carousel-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.38);
+  width: var(--tap-min);
+  height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
   border: none;
-  cursor: pointer;
   padding: 0;
-  transition: background var(--transition), transform var(--transition);
 }
 
-.carousel-dot.active {
-  background: var(--color-primary);
-  transform: scale(1.35);
+.carousel-dot::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--cf-text-body);
+  border: var(--bw-hair) solid var(--cf-black);
+  transition: background var(--transition), scale var(--transition);
 }
+
+/* Bone plus a size change — not teal, which would be 2.88:1 here. */
+.carousel-dot.active::before {
+  background: var(--cf-text-strong);
+  scale: 1.4;
+}
+
+
+/* ---- 9c. Classes / booking panel ---------------------------------------- */
+
+.classes { padding-block: var(--space-section); }
+
+.schedule-panel {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.schedule-panel-icon { color: var(--cf-text-on-accent); }
+
+.schedule-panel-title {
+  font-size: var(--fs-d3);
+  color: var(--cf-text-display);
+}
+
+.schedule-panel-desc {
+  font-size: var(--fs-base);
+  color: var(--cf-text-body);
+  max-width: var(--measure);
+}
+
+.schedule-cta-btn { font-size: var(--fs-base); }
+
+
+/* ---- 9d. Pricing -------------------------------------------------------
+   The cards get the board treatment without new wrappers: .pricing-tier is
+   promoted into the teal header bar, and the remaining children are inset.
+   ---------------------------------------------------------------------- */
+
+.pricing { padding-block: var(--space-section); }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  align-items: stretch;
+  max-width: 68.75rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 48rem) {
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Six columns so five cards centre as 3 + 2 rather than leaving an orphan.
+   Carried over from the previous design; the arithmetic still works. */
+@media (min-width: 64rem) {
+  .pricing-grid { grid-template-columns: repeat(6, 1fr); }
+  .pricing-grid .pricing-card:nth-child(1),
+  .pricing-grid .pricing-card:nth-child(2),
+  .pricing-grid .pricing-card:nth-child(3) { grid-column: span 2; }
+  .pricing-grid .pricing-card:nth-child(4) { grid-column: 2 / span 2; }
+  .pricing-grid .pricing-card:nth-child(5) { grid-column: 4 / span 2; }
+}
+
+.pricing-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: var(--cf-surface-panel);
+  border: var(--bw-panel) solid var(--cf-border-panel);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: border-color var(--transition), box-shadow var(--transition),
+              translate var(--transition);
+}
+
+@media (hover: hover) {
+  .pricing-card:hover {
+    border-color: var(--cf-border-accent);
+    translate: -3px -3px;
+    box-shadow: 3px 3px 0 0 var(--cf-decor);
+  }
+}
+
+/* Promoted to the board's teal header bar. */
+.pricing-tier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2xs) var(--space-xs);
+  background: var(--cf-surface-accent);
+  color: var(--cf-text-on-accent);
+  border-block-end: var(--bw-panel) solid var(--cf-border-panel);
+  font-family: var(--font-display);
+  font-size: var(--fs-d4);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+/* The featured card. Distinguished by a heavier frame AND a brighter bar, so
+   it does not depend on colour alone. Bright teal can never sit behind light
+   text (bone on it is 2.63:1), so the label flips to black — 6.4:1. */
+.pricing-card--featured {
+  border-width: var(--bw-heavy);
+}
+
+.pricing-card--featured .pricing-tier {
+  background: var(--cf-teal-bright);
+  color: var(--cf-text-on-invert);
+}
+
+/* Everything below the bar shares one padded column. .popular-badge is
+   absolutely positioned and must stay out of the flow. */
+.pricing-card > :not(.pricing-tier):not(.popular-badge) {
+  margin-inline: var(--space-sm);
+}
+
+/* Push the CTA to the bottom so buttons line up across cards of unequal
+   description length. */
+.pricing-card > .btn {
+  margin-top: auto;
+  margin-bottom: var(--space-sm);
+}
+
+.pricing-price {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.1rem;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--cf-text-display);
+  font-synthesis: none;
+}
+
+.price-dollar {
+  font-size: 1.25rem;
+  margin-top: 0.45rem;
+}
+
+.price-period {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  align-self: flex-end;
+  margin-bottom: 0.35rem;
+  color: var(--cf-text-body);
+}
+
+.pricing-desc {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--cf-text-body);
+  margin-bottom: var(--space-md);
+}
+
+/* A full-width strip above the teal bar, in normal flow.
+   It was absolutely positioned over the bar's top-right corner, which
+   overlapped and clipped longer tier names ("FIT OF THE DA[Y]"). A badge whose
+   width depends on its text can never be safely overlaid on text that also
+   varies — so it gets its own row instead. Black on bone: 16.8:1. */
+.popular-badge {
+  order: -1;                       /* above the bar regardless of DOM order */
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
+  font-family: var(--font-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.25rem var(--space-2xs);
+}
+
+.popular-badge--alt {
+  background: var(--cf-surface-accent-active);
+  color: var(--cf-text-on-accent);
+}
+
+
+/* ---- 9e. Contact -------------------------------------------------------- */
+
+.contact { padding-block: var(--space-section); }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 48rem) {
+  .contact-grid { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.info-block {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  padding: var(--space-sm);
+  background: var(--cf-surface-panel);
+  border-inline-start: var(--bw-heavy) solid var(--cf-decor);
+}
+
+.info-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--cf-text-accent);
+  border: var(--bw-1) solid var(--cf-border-rule);
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.info-heading {
+  font-family: var(--font-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--cf-text-accent);
+}
+
+.info-content p { color: var(--cf-text-body); font-size: var(--fs-base); }
+
+/* inline-flex + min-height, because as plain inline links these measured
+   19px tall. The phone and email links are the primary contact path on a
+   phone; they have to be comfortably tappable. */
+.info-content a:not(.map-link) {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--cf-text-strong);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.info-content a:not(.map-link):hover { color: var(--cf-text-accent); }
 
 .map-link {
-  display: inline-block;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-size: var(--fs-sm);
   font-weight: 600;
-  color: #fff;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--cf-text-accent);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
 }
 
-.map-link:hover {
-  color: rgba(255, 255, 255, 0.75);
+.map-link:hover { color: var(--cf-text-strong); }
+
+/* The form card is a board; its title is the header bar. */
+.contact-form-wrapper {
+  background: var(--cf-surface-panel);
+  border: var(--bw-panel) solid var(--cf-border-panel);
+  border-radius: var(--radius);
 }
 
-/* ============================================================
-   UTILITIES / MISC
-   ============================================================ */
-section {
-  scroll-margin-top: var(--nav-height);
+.contact-form-title {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  margin: 0;
+  padding: var(--space-2xs) var(--space-sm);
+  background: var(--cf-surface-accent);
+  color: var(--cf-text-on-accent);
+  border-block-end: var(--bw-panel) solid var(--cf-border-panel);
+  font-size: var(--fs-d4);
+  letter-spacing: var(--tracking-label);
+}
+
+.contact-form-sub {
+  font-size: var(--fs-sm);
+  color: var(--cf-text-body);
+  padding: var(--space-sm) var(--space-sm) 0;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+}
+
+.contact-submit-btn { width: 100%; margin-top: var(--space-3xs); }
+
+#formAnnounce { padding-inline: var(--space-sm); }
+#formAnnounce:empty { padding: 0; }
+
+
+/* ---- 9f. Footer --------------------------------------------------------- */
+
+.footer {
+  background: var(--cf-surface-page);
+  border-block-start: var(--bw-panel) solid var(--cf-border-panel);
+  color: var(--cf-text-body);
+  padding-block: var(--space-xl) var(--space-lg);
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 40rem) {
+  .footer-inner { grid-template-columns: 2fr 1fr 1fr; align-items: start; }
+}
+
+.footer-brand .nav-logo { font-size: 1.25rem; margin-bottom: var(--space-3xs); }
+
+.footer-tagline {
+  font-family: var(--font-display);
+  font-size: var(--fs-d4);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--cf-text-accent);
+  margin-block: var(--space-3xs) var(--space-2xs);
+  font-synthesis: none;
+}
+
+.footer-copy { font-size: var(--fs-xs); color: var(--cf-text-muted); }
+
+.footer-heading {
+  font-family: var(--font-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--cf-text-strong);
+  margin-bottom: var(--space-2xs);
+}
+
+.footer-links ul { display: flex; flex-direction: column; }
+
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-size: var(--fs-sm);
+  color: var(--cf-text-body);
+  transition: color var(--transition);
+}
+
+.footer-links a:hover {
+  color: var(--cf-text-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.social-icons { display: flex; gap: var(--space-2xs); flex-wrap: wrap; }
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  color: var(--cf-text-body);
+  border: var(--bw-1) solid var(--cf-border-rule);
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), translate var(--transition);
+}
+
+.social-icon:hover {
+  background: var(--cf-surface-accent);
+  border-color: var(--cf-border-panel);
+  color: var(--cf-text-on-accent);
+  translate: 0 -2px;
+}
+
+
+/* ============================================================================
+   10. PRINT
+   ========================================================================= */
+
+@media print {
+  body::before, body::after { display: none; }
+  .navbar, .nav-toggle, .carousel-btn, .carousel-dots, .contact-form { display: none; }
+  /* Named keywords, not hex — the "no literals outside :root" rule holds here
+     too, and paper is genuinely black-on-white regardless of the brand. */
+  body { background: white; color: black; }
+  .board, .pricing-card, .contact-form-wrapper { border: 1px solid black; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }
 }

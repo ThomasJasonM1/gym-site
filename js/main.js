@@ -128,10 +128,14 @@
 
     navLinks.forEach(function (link) {
       const href = link.getAttribute('href');
-      if (href === '#' + currentId) {
-        link.classList.add('active');
+      const isCurrent = href === '#' + currentId;
+      link.classList.toggle('active', isCurrent);
+      // The visual active state is an underline plus a colour lift. Neither is
+      // exposed to assistive tech, so state is carried by aria-current too.
+      if (isCurrent) {
+        link.setAttribute('aria-current', 'true');
       } else {
-        link.classList.remove('active');
+        link.removeAttribute('aria-current');
       }
     });
   }
@@ -209,39 +213,24 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
+  let formMessageTimer;
+
+  /* Renders the status message INTO the aria-live region, so one node is both
+     visible and announced. The previous version appended a visible <p> to the
+     form and *also* mirrored the text into #formAnnounce, which meant screen
+     readers got it twice. Colours now live in .form-message--* in the
+     stylesheet rather than being injected as inline styles. */
   function showFormMessage(text, type) {
     const announce = document.getElementById('formAnnounce');
+    if (!announce) return;
 
-    // Remove any existing message
-    const existing = contactForm.querySelector('.form-message');
-    if (existing) existing.remove();
+    clearTimeout(formMessageTimer);
+    announce.className = 'form-message form-message--' + type;
+    announce.textContent = text;
 
-    const msg = document.createElement('p');
-    msg.className = 'form-message form-message--' + type;
-    msg.textContent = text;
-    msg.style.cssText = [
-      'margin-top: 0.75rem',
-      'padding: 0.65rem 1rem',
-      'border-radius: 6px',
-      'font-size: 0.9rem',
-      'font-weight: 500',
-      type === 'success'
-        ? 'background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;'
-        : 'background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;'
-    ].join('; ');
-
-    contactForm.appendChild(msg);
-
-    // Mirror text to aria-live region for screen readers
-    if (announce) {
+    formMessageTimer = setTimeout(function () {
+      announce.className = '';
       announce.textContent = '';
-      announce.textContent = text;
-    }
-
-    // Auto-remove after 5 s
-    setTimeout(function () {
-      msg.remove();
-      if (announce) announce.textContent = '';
     }, 5000);
   }
 
@@ -286,6 +275,13 @@
       carouselTrack.style.transform = 'translateX(-' + (current * 100) + '%)';
       Array.prototype.forEach.call(carouselDots.querySelectorAll('.carousel-dot'), function (d, i) {
         d.classList.toggle('active', i === current);
+        // The active dot is bone and 1.4x scale. Neither is exposed to
+        // assistive tech, so carry the state in aria-current as well.
+        if (i === current) {
+          d.setAttribute('aria-current', 'true');
+        } else {
+          d.removeAttribute('aria-current');
+        }
       });
     }
 
