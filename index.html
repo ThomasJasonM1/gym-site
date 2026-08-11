@@ -48,6 +48,14 @@
     <div class="nav-container">
       <div class="nav-brand">
         <a href="#home" class="nav-logo">
+          <!-- CF monogram from the gym's boards and posters. Inline SVG, no
+               image file. aria-hidden because the wordmark beside it already
+               says the name; announcing "CF Country Fit" would be redundant.
+               Never given the grunge/distress treatment — logo stays crisp. -->
+          <svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+            <rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="currentColor" stroke-width="3"/>
+            <text x="20" y="27.5" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="20" letter-spacing="0.5" fill="currentColor">CF</text>
+          </svg>
           <span class="logo-country">Country</span><span class="logo-fit">Fit</span>
         </a>
       </div>
@@ -110,11 +118,17 @@
            characters a screen reader announces "black star" between every
            word. Sentence case in the DOM, uppercased in CSS, because VoiceOver
            spells short all-caps strings out as initialisms. -->
-      <p class="hero-eyebrow eyebrow ribbon">
+      <p class="hero-eyebrow eyebrow">
         <span>Strength</span><span>Conditioning</span><span>Community</span>
       </p>
-      <h1 class="hero-headline">Come Ready.<br />Leave Proud.</h1>
-      <p class="hero-sub">Country Fit is where hard work meets heart. Join a gym that believes in you, your community, and the values that make this country great.</p>
+
+      <!-- The h1 is the product, not the tagline. The brand line "Come Ready.
+           Leave Proud." lives on in the footer. This mirrors the gym's own
+           GROUP CLASSES poster, where the headline and the "all levels" banner
+           are the whole message. -->
+      <h1 class="hero-headline">Group Classes</h1>
+      <p class="hero-banner ribbon">All Levels. All Welcome.</p>
+
       <!-- Primary conversion action. Goes straight to signup, never through
            the contact form. Same destination and same label as the nav button
            and the sticky bar — one name for one thing, never "free trial". -->
@@ -122,7 +136,7 @@
          data-link="free-class"
          href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
          target="_blank" rel="noopener noreferrer">Claim Your Free Class</a>
-      <p class="hero-trust">All levels welcome. No experience required.</p>
+      <p class="hero-trust">No experience required.</p>
     </div>
   </section>
 
@@ -130,17 +144,8 @@
   <section class="classes" id="classes">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Group Classes</h2>
+        <h2 class="section-title">Class Schedule</h2>
       </div>
-
-      <p class="section-body">
-        Experience the energy of training together in a supportive, coach-led environment.
-        Our group classes combine strength, conditioning, and functional fitness with workouts
-        that are challenging, scalable, and designed for every fitness level. Whether you're
-        just getting started or looking to push your limits, you'll be coached every step of
-        the way while becoming part of a community that motivates, encourages, and celebrates
-        your progress.
-      </p>
 
       <!-- ══════════════════════════════════════════════════════════════════
            CLASS SCHEDULE — SINGLE SOURCE OF TRUTH
@@ -217,7 +222,7 @@
         "sameAs": ["https://www.facebook.com/profile.php?id=61578892311382"],
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "2409 Country Road 645",
+          "streetAddress": "2409 County Road 645",
           "addressLocality": "Farmersville",
           "addressRegion": "TX",
           "postalCode": "75442",
@@ -234,6 +239,69 @@
         ]
       }
       </script>
+
+      <!-- Decorative connector, in the language of the hand-drawn arrows on
+           the gym's boards. aria-hidden: it carries no meaning the copy does
+           not already state. preserveAspectRatio="none" plus non-scaling-stroke
+           let one path stretch to any width without the stroke fattening. -->
+      <svg class="arrow" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d="M6 6 C 34 40, 68 4, 104 34" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        <path d="M92 38 L104 34 L100 22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      </svg>
+
+      <div class="section-actions">
+        <a class="btn btn-cta"
+           data-link="free-class"
+           href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+           target="_blank" rel="noopener noreferrer">Claim Your Free Class</a>
+        <a class="btn btn-outline"
+           data-link="plans"
+           href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+           target="_blank" rel="noopener noreferrer">View Membership Plans</a>
+      </div>
+
+      <p class="section-body">
+        Experience the energy of training together in a supportive, coach-led environment.
+        Our group classes combine strength, conditioning, and functional fitness with workouts
+        that are challenging, scalable, and designed for every fitness level. Whether you're
+        just getting started or looking to push your limits, you'll be coached every step of
+        the way while becoming part of a community that motivates, encourages, and celebrates
+        your progress.
+      </p>
+
+      <!-- The three feature panels from the client's GROUP CLASSES poster,
+           built on the same .board component as the schedule.
+           TODO(copy): descriptions transcribed from the poster image, where
+           they are set very small. Confirm exact wording with the client. -->
+      <ul class="board-grid features" role="list">
+        <li class="board">
+          <div class="board__bar">
+            <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3 class="board__label">Coach-Led Classes</h3>
+          </div>
+          <div class="board__body">
+            <p class="board__text">Expert coaching to help you move better, get stronger, and stay consistent.</p>
+          </div>
+        </li>
+        <li class="board">
+          <div class="board__bar">
+            <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M4 12h2M18 12h2"/></svg>
+            <h3 class="board__label">Workouts Scaled For Every Level</h3>
+          </div>
+          <div class="board__body">
+            <p class="board__text">Every workout can be modified for you to succeed and grow.</p>
+          </div>
+        </li>
+        <li class="board">
+          <div class="board__bar">
+            <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            <h3 class="board__label">Supportive Community</h3>
+          </div>
+          <div class="board__body">
+            <p class="board__text">Real people. Real support. Real results.</p>
+          </div>
+        </li>
+      </ul>
 
       <!-- Scroll-snap strip on a phone, plain grid from 700px. tabindex and an
            accessible name because a horizontally scrollable region has to be
@@ -261,17 +329,6 @@
           </picture>
         </li>
       </ul>
-
-      <div class="section-actions">
-        <a class="btn btn-cta"
-           data-link="free-class"
-           href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
-           target="_blank" rel="noopener noreferrer">Claim Your Free Class</a>
-        <a class="btn btn-outline"
-           data-link="plans"
-           href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
-           target="_blank" rel="noopener noreferrer">View Membership Plans</a>
-      </div>
     </div>
   </section>
 
@@ -508,8 +565,8 @@
             </div>
             <div class="info-content">
               <h3 class="info-heading">Address</h3>
-              <p>2409 Country Road 645<br />Farmersville, TX 75442</p>
-              <a href="https://maps.google.com/maps?q=2409+Country+Road+645,+Farmersville,+TX+75442"
+              <p>2409 County Road 645<br />Farmersville, TX 75442</p>
+              <a href="https://maps.google.com/maps?q=2409+County+Road+645,+Farmersville,+TX+75442"
                  data-link="directions"
                  class="map-link" target="_blank" rel="noopener noreferrer">Get Directions</a>
             </div>
@@ -593,6 +650,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Closing band, mirroring the strip across the bottom of the gym's
+         workout boards. The star separators are CSS-generated (.eyebrow), so a
+         screen reader reads three clean phrases instead of "black star"
+         between each one. -->
+    <p class="footer-strip eyebrow">
+      <span>Farmersville, TX</span><span>Real people. Real results.</span><span>Join a community that pushes you and cheers you on every step.</span>
+    </p>
   </footer>
 
   <!-- ===== STICKY MOBILE ACTION BAR =====

@@ -32,14 +32,19 @@ window.SITE = {
   links: {
 
     /* ---------------------------------------------------------------------
-       TODO: replace with confirmed free trial signup URL
+       CONFIRMED DESTINATION — this is not a placeholder.
 
-       This is the PushPress *membership plans* page standing in for the
-       dedicated free-trial signup until the real URL is confirmed. It is the
-       destination for FOUR consumers: the nav button, the hero CTA, the
-       post-schedule CTA, and the sticky mobile action bar. Changing it here
-       plus the four literals in index.html updates all of them.
+       Checked against the live page 2026-08-10: PushPress lists "Free Trial"
+       ($0.00, 1 session) as a product ON this plans page, alongside Drop In
+       ($15) and Monthly Unlimited ($125). Selecting it opens a modal without
+       changing the URL, and no per-plan deep link is exposed, so this page is
+       the only entry point that exists. Client reviewed and chose to keep it.
 
+       If a Free-Trial-only plan category is ever created in PushPress, its
+       ?category=... URL would land visitors on that single option — swap it in
+       here and in the four literal hrefs in index.html.
+
+       FOUR consumers: nav button, hero CTA, post-schedule CTA, sticky bar.
        User-facing label is "Claim Your Free Class" (or "Free Class" in the
        compact nav and action bar). Never "free trial" or "trial class" —
        one name for one thing.
@@ -69,10 +74,11 @@ window.SITE = {
     'tel':   'tel:+14693375839',
     'email': 'mailto:info@countryfittx.com',
 
-    /* NOTE: street is "Country Road 645" as written in the existing source.
-       Texas convention is "County Road" — flagged to the client, unconfirmed,
-       deliberately left as-is so the maps query keeps resolving the same way. */
-    'directions': 'https://maps.google.com/maps?q=2409+Country+Road+645,+Farmersville,+TX+75442',
+    /* Street corrected to "County Road" 2026-08-10, confirmed by the client.
+       It previously read "Country Road" here, in the visible address, and in
+       the JSON-LD. If you change it, change all three together — this query
+       string and the literal href in index.html are compared by syncLinks(). */
+    'directions': 'https://maps.google.com/maps?q=2409+County+Road+645,+Farmersville,+TX+75442',
 
     'facebook': 'https://www.facebook.com/profile.php?id=61578892311382'
   },

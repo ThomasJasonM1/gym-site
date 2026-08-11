@@ -1,94 +1,166 @@
 # Country Fit, LLC. — Project Context for Claude
 
-## Business Details
+## Business
+
 - **Name:** Country Fit, LLC.
-- **Domain:** countryfitusa.com
-- **Address:** 2409 Country Road 645, Farmersville, TX 75442
-- **Email:** hello@countryfitusa.com
+- **Address:** 2409 County Road 645, Farmersville, TX 75442
+  (it read "Country Road" until 2026-08-10; client confirmed **County**)
+- **Phone / SMS:** 469-337-5839 — texting is the preferred contact method
+- **Email:** info@countryfittx.com
+- **Domain:** `countryfittx.com`. ⚠️ `countryfitusa.com` has **no DNS record** —
+  it does not exist. Canonical, OG and JSON-LD all use countryfittx.com.
 - **Facebook:** https://www.facebook.com/profile.php?id=61578892311382
-- **Theme:** Patriotic American — Red, White, and Blue
+- **Brand:** teal / black / white grunge, matching the gym's printed workout
+  boards and class posters.
 
-## Tech Stack
-- Vanilla HTML5 / CSS3 / JavaScript — no frameworks, no build tools, no npm
-- Google Fonts: Inter (400, 500, 600, 700, 800)
-- Opened directly in browser (file:// protocol OK — no dev server needed)
+## Tech stack
 
-## File Structure
+Vanilla HTML5 / CSS3 / JavaScript. **No framework, no build step, no npm.**
+
+> ### ⚠️ Preview over a local server, never `file://`
+> ```
+> python -m http.server 8000     # then open http://localhost:8000
+> ```
+> Chrome treats every `file://` document as an opaque origin, so the
+> self-hosted `@font-face` files are CORS-blocked and the whole site silently
+> falls back to Impact / system-ui. It looks broken but isn't.
+
+## File map
+
 ```
 gym-site/
-├── index.html            # Single-page site — all 6 sections
-├── css/
-│   └── styles.css        # All styles (reset, variables, layout, sections, responsive)
+├── index.html              the only page
+├── css/styles.css          the only stylesheet
 ├── js/
-│   └── main.js           # Nav toggle, smooth scroll, scroll-spy, contact form
+│   ├── site-config.js      link registry — loads FIRST
+│   └── main.js             nav, scroll-spy, copy-to-clipboard, form
 ├── assets/
-│   └── images/
-│       ├── hero-bg.jpg               # Hero background image
-│       ├── class-instructor-training.jpg
-│       ├── outdoor-workout.jpg
-│       ├── post-workout-2.jpg
-│       ├── post-workout-group.jpg    # Used as gallery wide/featured image
-│       ├── stock-photo-1.jpg
-│       ├── stock-photo-2.jpg
-│       └── stock-photo-3.jpg
-└── CLAUDE.md             # This file
+│   ├── img/                DERIVED, COMMITTED — what actually ships
+│   ├── images/             CAMERA ORIGINALS — gitignored, never deployed
+│   ├── fonts/              Anton 400, Barlow 400/600 (latin, 62 KB)
+│   └── textures/           two seamless grain tiles (17 KB)
+├── tools/                  local authoring only, never deployed
+│   ├── build-images.py     originals -> WebP/JPEG (needs Pillow, pillow-heif)
+│   ├── build-textures.py   regenerates the grain tiles
+│   └── preflight.ps1       pre-deploy asset check
+└── favicon.ico / favicon.svg
 ```
 
-## Page Sections (in DOM order)
-1. **Navbar** — fixed, dark navy, hamburger on mobile, scroll-spy active link
-2. **Hero** — full-viewport, hero-bg.jpg with patriotic overlay, inline American flag SVG
-3. **Patriot stripe** — red/white/blue CSS divider between hero and classes
-4. **Classes** — 7-day schedule grid, collapses to 2-col on mobile
-5. **Gallery** — photo grid on dark navy background, wide first image + 6 others
-6. **Pricing** — 2 cards: Monthly Membership ($50→$25/mo first year) + Personal Training (contact)
-7. **Contact** — address/hours/form left, Google Maps iframe right; includes Texas SVG with Farmersville star
-8. **Footer** — dark navy, brand, quick links, social icons
+## Page sections, in DOM order
 
-## Design System (CSS Custom Properties)
-```css
---color-primary:   #b22234;  /* American red */
---color-secondary: #3c3b6e;  /* American navy blue */
---color-accent:    #ffffff;  /* white */
---color-dark:      #0d0e1a;  /* near-black for hero/nav/gallery */
---color-light:     #f4f6fb;  /* off-white section backgrounds */
---color-text:      #1a1a2e;
---color-muted:     #6c757d;
---font-base:       'Inter', sans-serif;
---radius:          8px;
---shadow:          0 4px 24px rgba(0,0,0,0.12);
---nav-height:      68px;
---transition:      0.25s ease;
+| id | Heading | Notes |
+|---|---|---|
+| `home` | **h1 Group Classes** | The hero *is* the classes pitch, deliberately. `68svh`, not full height, so the schedule below breaks the fold. |
+| `classes` | h2 Class Schedule | Schedule boards, arrow, free-class CTA + plans link, the client's verbatim copy, three feature panels, photo strip |
+| `training` | h2 Personal Training | Also carries `#schedule` as an alias — see gotchas |
+| `gallery` | h2 Our Gym | Photo grid |
+| `pricing` | h2 Online Training Plans | Five Everfit packages |
+| `contact` | h2 Find Us | Text-us board, address, email, Formspree form |
+
+**Nav order, footer links, and `sectionIds` in `main.js` must all match this
+order.** A stale `sectionIds` breaks scroll-spy silently — there is no error.
+
+## Design system
+
+Read the header comment at the top of `css/styles.css` before changing colour.
+The house rules there are load-bearing:
+
+- **No hex literals outside `:root`.** Everything resolves from a token.
+- **No border-radius, no gradients, no soft shadows.** Flat ink, hard edges.
+- **Bone for display and emphasis, gray for running text, never pure white.**
+- **Brand teal `#00686D` is 2.88:1 on the page background.** It is a FILL and
+  DECORATION colour only — never text, never a lone state indicator, never a
+  focus ring. Use `--cf-teal-bright` (6.4:1) for anything text-shaped. The
+  teal was sampled from the client's actual signage, not picked.
+
+Tokens are three layers: raw channels → derived opaque → semantic aliases.
+Components use **only** the semantic layer, which is why `prefers-contrast:
+more` can re-point a few raw channels and have everything downstream follow.
+
+`--nav-height` is measured by `getBoundingClientRect()` in `main.js`, not
+parsed from the token — `parseInt('4.25rem')` would return `4`.
+
+### The board component
+Outlined dark panel + teal header bar with a line icon. It is the signature
+element, meant to rhyme with the boards hanging in the gym. Used by the
+schedule, the feature panels, the pricing cards and the contact form.
+**Never add `overflow:hidden` or `clip-path` to `.board`** — both clip the
+offset focus ring of anything inside it.
+
+## The link registry
+
+Every external URL and contact detail is declared once in `js/site-config.js`.
+Each anchor in the HTML carries **both** a real literal `href` (so the page
+works with JavaScript disabled) **and** a `data-link="token"`. On load,
+`syncLinks()` reconciles them; the config wins at runtime and any drift logs a
+console warning.
+
+```
+http://localhost:8000/?linkcheck=1     # audits every [data-link] anchor
 ```
 
-## Responsive Breakpoints
-- Mobile-first
-- `@media (min-width: 640px)` — footer columns
-- `@media (min-width: 768px)` — tablet (pricing 2-col, contact 2-col, gallery 3-col)
-- `@media (min-width: 1024px)` — desktop (not yet used explicitly)
+To change a URL: edit `site-config.js` **and** the matching literal `href`.
+The Google Maps query string counts — it is compared too.
 
-## Important CSS Notes
-- Hero background image path from CSS: `url('../assets/images/hero-bg.jpg')` (relative to css/ subdirectory)
-- Image paths from HTML: `assets/images/filename.jpg` (relative to root)
-- Gallery section uses dark background (`--color-dark`) — section title and sub text are white/muted white
-- `scroll-margin-top: var(--nav-height)` applied to all sections for correct anchor scroll offset
+## The class schedule
 
-## JavaScript (main.js)
-- Scroll-spy section order: `['home', 'classes', 'gallery', 'pricing', 'contact']`
-- Contact form does client-side validation only — no backend wired yet
-- Footer year auto-populated via `new Date().getFullYear()`
+The times live in **exactly one place**: the `<dl class="schedule">` in
+`#classes`, with `<time datetime>` on every slot. The JSON-LD
+`openingHoursSpecification` sits immediately after it in the same section —
+deliberately adjacent, so both representations land in one screenful and one
+diff hunk. **Change the schedule ⇒ change both, same commit.**
 
-## Pricing (current)
-- **Monthly Membership:** ~~$50/mo~~ → **$25/mo** for first year ("Founding Member Special")
-- **Personal Training:** Contact for Pricing
+It is plain HTML, not a JS array, because the page must work with JS disabled.
 
-## Patriotic / Texas Design Elements
-- Inline American flag SVG (bottom-right of hero, 50-star accurate layout)
-- Red/white/blue CSS stripe divider after hero
-- Texas outline SVG in contact section with ★ star marking Farmersville (NE Texas)
-- Color scheme throughout references flag colors
+## Gotchas
 
-## Git / Deploy
-- Repo: https://github.com/ThomasJasonM1/gym-site
-- Branch: main
-- Deploy target: countryfitusa.com (not yet configured)
-- Google Maps iframe src uses address-based embed — swap with API key embed before launch if needed
+- **`#schedule` resolves to Personal Training, not the class schedule.** It is
+  a backwards-compatibility alias: that id used to be on the old section titled
+  "Schedule", which became Personal Training. Kept so external links survive.
+- **Class duration in the JSON-LD is an assumed 60 minutes.** Nothing visible
+  depends on it; change the `closes` values if that is wrong.
+- **The free-class URL is the PushPress *plans* page, and that is correct.**
+  Free Trial ($0.00) is one of three products on it. No per-plan deep link
+  exists. Confirmed with the client 2026-08-10 — do not "fix" this.
+- **Star separators are CSS-generated** (`.eyebrow`), never typed into the DOM.
+  As literal characters a screen reader announces "black star" between every
+  phrase.
+- All-caps is applied in CSS, never in the DOM — VoiceOver spells short
+  all-caps strings out as initialisms.
+
+## Deploy
+
+Bluehost `public_html`, manual upload.
+
+```powershell
+.\tools\preflight.ps1        # MUST pass before uploading
+```
+
+Bluehost is a **case-sensitive** filesystem; Windows and git are not. Preflight
+compares every asset reference against the real directory listing with exact
+case. This is not theoretical — nine carousel images shipped as `.JPG` while
+referenced as `.jpg` and 404'd in production for months.
+
+Upload everything **except** `assets/images/`, `tools/`, and dotfiles.
+
+## Regenerating images
+
+```
+pip install Pillow pillow-heif
+python tools/build-images.py --list
+python tools/build-images.py --contact-sheet         # previews to review
+python tools/build-images.py IMG_1072.HEIC --name hero-overhead-press \
+       --preset hero-tall --focus 0.3
+```
+
+Applies then discards EXIF rotation, strips all metadata, converts to sRGB, and
+emits WebP + JPEG at preset widths under a byte budget. `--focus` biases the
+crop along the trimmed axis — a plain centre crop of a portrait into a 1.9:1
+share card lands on the subject's chin.
+
+## Accessibility floor
+
+Visible focus on every control, 44×44 tap targets, 4.5:1 body text and 3:1
+large text, alt text on every image, `prefers-reduced-motion` respected, and
+the page fully usable with JavaScript disabled. All of it is currently met —
+verified by measuring the rendered page, not by inspection. Keep it that way.

@@ -907,6 +907,15 @@ main,
 .nav-cta    { order: 2; }
 .nav-toggle { order: 3; }
 
+/* CF monogram badge. Sized in em so it tracks the wordmark beside it. */
+.logo-mark {
+  width: 1.5em;
+  height: 1.5em;
+  flex: 0 0 auto;
+  margin-inline-end: 0.4em;
+  color: var(--cf-text-display);
+}
+
 .nav-logo {
   display: inline-flex;
   align-items: center;
@@ -1029,9 +1038,12 @@ main,
 
 .hero {
   position: relative;
-  /* svh, not vh. On mobile vh resolves to the LARGE viewport, so the bottom of
-     the hero — where the primary CTA lives — sits behind browser chrome. */
-  min-height: 100svh;
+  /* Deliberately SHORTER than the viewport. The client asked for classes and
+     the schedule to be front and centre, so the schedule below must be partly
+     visible on landing — a cut-off row is what tells a visitor to scroll.
+     svh, not vh: on mobile vh resolves to the LARGE viewport, so a 100vh hero
+     hides its own bottom edge behind browser chrome. */
+  min-height: 68svh;
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
@@ -1043,7 +1055,7 @@ main,
 }
 
 @supports not (min-height: 100svh) {
-  .hero { min-height: 100vh; }
+  .hero { min-height: 68vh; }
 }
 
 /* Mobile: the photo fills the hero behind the scrim. */
@@ -1082,9 +1094,15 @@ main,
   opacity: var(--alpha-grain);
 }
 
+/* A column, not a block of inline flow. .ribbon and .btn are both inline-level
+   and would otherwise sit on the same line whenever the viewport is wide
+   enough — which put "All Levels. All Welcome." beside the CTA at 768px. */
 .hero-content {
   position: relative;
   z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 48rem;
   padding-inline: var(--space-md);
 }
@@ -1127,6 +1145,7 @@ main,
   .hero-content {
     grid-column: 1;
     grid-row: 1;
+    align-items: flex-start;
     align-self: center;
     justify-self: end;
     max-width: 34rem;
@@ -1156,10 +1175,22 @@ main,
   margin-bottom: var(--space-md);
 }
 
-/* The split layout gives the copy half the width, so the full-bleed display
-   step would overflow the column. Step down one. */
+/* "Group Classes" is far shorter than the old two-line tagline, so it can run
+   at full display size without overflowing the half-width column. */
 @media (min-width: 64rem) {
-  .hero-headline { font-size: var(--fs-d1); }
+  .hero-headline { font-size: var(--fs-d0); }
+}
+
+/* The poster's teal banner under the headline. .ribbon supplies the torn edge
+   and the fill; this is the display-size treatment. Bone on teal is 5.9:1. */
+.hero-banner {
+  margin-bottom: var(--space-md);
+  font-family: var(--font-display);
+  font-size: var(--fs-d4);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-synthesis: none;
 }
 
 .hero-cta { font-size: var(--fs-base); padding-inline: var(--space-xl); }
@@ -1336,7 +1367,19 @@ main,
 
 /* ---- 9c. Group Classes -------------------------------------------------- */
 
-.classes { padding-block: var(--space-section); }
+/* Tight top padding, unlike every other section. This one sits directly under
+   the hero and the schedule inside it has to break the fold — a partly visible
+   row is what tells a visitor there is more to scroll to. Measured at 375, 768
+   and 1440; do not restore --space-section here without re-checking all three. */
+.classes {
+  padding-block-start: var(--space-lg);
+  padding-block-end: var(--space-section);
+}
+
+/* Smaller than a normal section title: the hero directly above already says
+   GROUP CLASSES at display size, and two stacked display headings compete. */
+.classes .section-title { font-size: var(--fs-d3); }
+.classes .section-header { margin-bottom: var(--space-md); }
 
 /* Section body copy. Left-aligned inside a centred, measure-capped column —
    a paragraph this long is markedly harder to read centred. */
@@ -1436,6 +1479,35 @@ main,
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
 }
+
+/* The poster's three feature panels. Built on .board, so they inherit the
+   teal header bar and outlined-panel treatment of the schedule beside them. */
+.features { margin-bottom: var(--space-xl); }
+
+/* Hand-drawn connector, in the language of the arrows on the gym's boards.
+   preserveAspectRatio="none" lets one path stretch to any width, and
+   vector-effect keeps the stroke from fattening when it does. */
+.arrow {
+  display: block;
+  width: clamp(5rem, 18vw, 8rem);
+  height: auto;
+  margin: 0 auto var(--space-2xs);
+  color: var(--cf-decor);
+}
+
+/* Draw-on is opt-in, not opt-out: gating on no-preference means the animation
+   is simply never declared for anyone who asked for reduced motion, rather
+   than being declared and then cancelled. */
+@media (prefers-reduced-motion: no-preference) {
+  .arrow path {
+    stroke-dasharray: 220;
+    stroke-dashoffset: 220;
+    animation: cf-draw 700ms var(--ease-out) forwards;
+  }
+  .arrow path:nth-child(2) { animation-delay: 450ms; }
+}
+
+@keyframes cf-draw { to { stroke-dashoffset: 0; } }
 
 /* CTA pair closing a section. Used by Group Classes and Personal Training. */
 .section-actions {
@@ -1940,6 +2012,18 @@ main,
   border-color: var(--cf-border-panel);
   color: var(--cf-text-on-accent);
   transform: translateY(-2px);
+}
+
+/* Closing band, mirroring the strip across the bottom of the gym's workout
+   boards. Full-bleed inside the footer, above the copyright column. */
+.footer-strip {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  border-block-start: var(--bw-1) solid var(--cf-border-rule);
+  color: var(--cf-text-body);
+  font-size: var(--fs-2xs);
+  text-align: center;
+  row-gap: var(--space-3xs);
 }
 
 
