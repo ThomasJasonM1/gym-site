@@ -26,7 +26,6 @@
        anything text-shaped.
    ========================================================================= */
 
-
 /* ============================================================================
    1. FONTS — self-hosted, latin subset only, 62.1 KB total
    ----------------------------------------------------------------------------
@@ -59,6 +58,20 @@
                  U+FEFF, U+FFFD;
 }
 
+/* The heavy oblique on the gym's boards — "GOBLET SQUATS", "5 x 10". Not
+   Mistral: that is a connected brush script and a different shape entirely
+   (and proprietary, so it could not be self-hosted anyway). This is the same
+   Barlow already loaded here, in its 700 italic. */
+@font-face {
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/barlow-latin-700-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2122, U+2605,
+                 U+FEFF, U+FFFD;
+}
+
 @font-face {
   font-family: 'Barlow';
   font-style: normal;
@@ -68,7 +81,6 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2122, U+2605,
                  U+FEFF, U+FFFD;
 }
-
 
 /* ============================================================================
    2. TOKENS
@@ -198,6 +210,8 @@
 
   --font-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
   --font-body:    'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Accent face for the board's slanted callouts. Always 700 italic. */
+  --font-slant:   'Barlow', system-ui, sans-serif;
 
   /* ---- Motion ------------------------------------------------------------ */
   --dur-fast: 120ms;
@@ -225,7 +239,6 @@
 /* Breakpoints are min-width only, mobile first. No build step means no
    @custom-media, so they are written out below. For reference:
      sm 30rem/480   md 48rem/768   lg 64rem/1024   xl 80rem/1280            */
-
 
 /* ============================================================================
    3. RESET + BASE
@@ -290,7 +303,6 @@ h1, h2, h3, h4 {
 }
 
 section { scroll-margin-top: var(--nav-height); }
-
 
 /* ============================================================================
    4. ACCESSIBILITY PRIMITIVES
@@ -393,7 +405,6 @@ section { scroll-margin-top: var(--nav-height); }
   :focus-visible { outline-color: Highlight; box-shadow: none; }
 }
 
-
 /* ============================================================================
    5. TEXTURE PLATE
    ----------------------------------------------------------------------------
@@ -445,7 +456,6 @@ main,
   z-index: var(--z-content);
 }
 
-
 /* ============================================================================
    6. LAYOUT PRIMITIVES
    ========================================================================= */
@@ -478,7 +488,6 @@ main,
   .board-grid { grid-auto-rows: auto 1fr; }
   .board-grid > .board { grid-row: span 2; grid-template-rows: subgrid; }
 }
-
 
 /* ============================================================================
    7. TYPE UTILITIES
@@ -571,7 +580,6 @@ main,
      11% calc(100% - 6px),  0% calc(100% - 2px)
   );
 }
-
 
 /* ============================================================================
    8. COMPONENTS
@@ -713,7 +721,6 @@ main,
   text-decoration-thickness: var(--bw-1);
 }
 
-
 /* ---- 8b. The board — signature component -------------------------------
    Thick bone-outlined dark panel, teal header bar carrying a line icon and an
    uppercase label. This is the element the site should be remembered by; it
@@ -803,7 +810,6 @@ main,
 .board--link { position: relative; }
 .board--link .board__cta::after { content: ''; position: absolute; inset: 0; }
 
-
 /* ---- 8c. Forms ---------------------------------------------------------- */
 
 .form-group {
@@ -868,7 +874,6 @@ main,
   border-color: var(--cf-danger);
 }
 
-
 /* ---- 8d. Navbar --------------------------------------------------------- */
 
 .navbar {
@@ -925,8 +930,11 @@ main,
   background: var(--cf-border-rule);
 }
 
+/* Teal wordmark against the bone CF mark. --cf-text-accent, NOT --cf-teal:
+   the brand teal is 2.88:1 on this background and cannot carry text. The
+   bright teal is 6.4:1. */
 .logo-word {
-  color: var(--cf-text-display);
+  color: var(--cf-text-accent);
   white-space: nowrap;
 }
 
@@ -940,7 +948,6 @@ main,
   text-transform: uppercase;
   font-synthesis: none;
 }
-
 
 .nav-menu {
   display: flex;
@@ -978,8 +985,12 @@ main,
   transition: transform var(--transition);
 }
 
-.nav-link:hover,
+/* Hover is teal, current-page is bone — two distinct states rather than one.
+   Both also move the underline, so neither depends on colour alone. */
+.nav-link:hover { color: var(--cf-text-accent); }
 .nav-link.active { color: var(--cf-text-strong); }
+
+.nav-link:hover::after { background: var(--cf-text-accent); }
 
 .nav-link:hover::after,
 .nav-link.active::after { transform: scaleX(1); }
@@ -1030,7 +1041,7 @@ main,
   }
 
   .nav-link::after { display: none; }
-  .nav-link.active { color: var(--cf-text-accent); }
+  .nav-link.active { color: var(--cf-text-strong); }
 
   .nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
@@ -1040,7 +1051,6 @@ main,
     transform: translateY(-7px) rotate(-45deg);
   }
 }
-
 
 /* ============================================================================
    9. SECTIONS
@@ -1104,7 +1114,43 @@ main,
 /* Small phones: the schedule earns its place in the hero only if the CTA is
    still reachable without scrolling. Every value below was trimmed against a
    375x667 viewport until "Claim Your Free Class" cleared the fold. Re-measure
-   before loosening any of them. */
+
+/* Short phones (360x640 and similar). The constraint here is viewport HEIGHT,
+   not width, so it is queried on height: a 360px-wide phone with a tall screen
+
+/* Stacked on two lines like the poster. line-height is already 0.92, so the
+   two words lock together as one block of ink. */
+.hero-headline {
+  font-size: var(--fs-d0);
+  color: var(--cf-text-display);
+  margin-bottom: var(--space-sm);
+}
+
+.hero-banner {
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-slant);
+  font-style: italic;
+  font-weight: 700;
+  font-size: var(--fs-d4);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+.hero-cta { font-size: var(--fs-base); padding-inline: var(--space-xl); }
+
+.hero-trust {
+  margin-top: var(--space-xs);
+  font-size: var(--fs-sm);
+  color: var(--cf-text-body);
+  letter-spacing: 0.02em;
+}
+
+/* Mobile hero overrides. These MUST sit after the .hero-* component rules
+   above: they carry the same specificity, so file order decides, and when
+   they lived higher up the base font sizes silently won. */
+
 @media (max-width: 29.99rem) {
   .hero {
     min-height: 0;
@@ -1159,44 +1205,22 @@ main,
   }
 }
 
-/* Short phones (360x640 and similar). The constraint here is viewport HEIGHT,
-   not width, so it is queried on height: a 360px-wide phone with a tall screen
-   has no problem. Trimmed until the CTA cleared the fold at 640px tall. */
 @media (max-width: 29.99rem) and (max-height: 680px) {
   .hero {
-    padding-top: calc(var(--nav-height) + var(--space-2xs));
+    padding-top: calc(var(--nav-height) + var(--space-sm));
     padding-bottom: var(--space-sm);
   }
-  .hero-headline { font-size: 2.25rem; }
-  .hero-schedule { margin-block: var(--space-2xs) var(--space-sm); }
-  .hero-trust    { margin-top: var(--space-3xs); }
-}
 
-/* Stacked on two lines like the poster. line-height is already 0.92, so the
-   two words lock together as one block of ink. */
-.hero-headline {
-  font-size: var(--fs-d0);
-  color: var(--cf-text-display);
-  margin-bottom: var(--space-sm);
-}
-
-.hero-banner {
-  margin-bottom: var(--space-lg);
-  font-family: var(--font-display);
-  font-size: var(--fs-d4);
-  line-height: var(--lh-display);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  font-synthesis: none;
-}
-
-.hero-cta { font-size: var(--fs-base); padding-inline: var(--space-xl); }
-
-.hero-trust {
-  margin-top: var(--space-xs);
-  font-size: var(--fs-sm);
-  color: var(--cf-text-body);
-  letter-spacing: 0.02em;
+  /* On short screens the CTA moves ABOVE the schedule. Sizing the type down
+     far enough to fit headline + banner + schedule + button into 640px left
+     about one pixel of clearance, which any font-metric difference on a real
+     device would wipe out. Reordering removes the failure mode instead of
+     tuning around it: the button clears the fold by construction, the times
+     sit immediately beneath it, and the type stays full size.
+     Only .hero-cta is focusable among these, so DOM and tab order are
+     unchanged — this alters paint order only. */
+  .hero-schedule { order: 1; margin-block: var(--space-md) 0; }
+  .hero-trust    { order: 2; margin-top: var(--space-sm); }
 }
 
 
@@ -1281,7 +1305,6 @@ main,
 @media (min-width: 48rem) {
   .action-bar { display: none; }
 }
-
 
 /* ---- 9b. Photo strip / grid --------------------------------------------
    Replaces the carousel. Horizontal scroll-snap on a phone so it still feels
@@ -1369,7 +1392,6 @@ main,
   border: var(--bw-2) solid var(--cf-border-panel);
 }
 
-
 /* ---- 9c. Group Classes -------------------------------------------------- */
 
 /* Tight top padding, unlike every other section. This one sits directly under
@@ -1452,7 +1474,9 @@ main,
 .schedule__times { display: flex; }
 
 .schedule__times li {
-  font-family: var(--font-display);
+  font-family: var(--font-slant);
+  font-style: italic;
+  font-weight: 700;
   font-size: var(--fs-d4);
   line-height: 1.15;
   letter-spacing: var(--tracking-label);
@@ -1515,6 +1539,52 @@ main,
   gap: var(--space-sm);
 }
 
+/* ---- The creed band ----------------------------------------------------
+   One full-bleed block of teal between the classes and the training sections.
+   The page was a long uninterrupted run of near-black; a single strong colour
+   break gives it rhythm without adding another panel.
+   Bone on brand teal is 5.9:1 — the measured-safe pairing.
+   ---------------------------------------------------------------------- */
+
+.creed {
+  background: var(--cf-surface-accent);
+  border-block: var(--bw-panel) solid var(--cf-border-panel);
+  padding-block: var(--space-xl);
+  padding-inline: var(--space-md);
+  text-align: center;
+}
+
+/* A column: the chip below is inline-block, so in normal inline flow it wraps
+   onto the same line as the tail of the sentence above it. */
+.creed__line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+  max-width: 48rem;
+  margin-inline: auto;
+  font-family: var(--font-slant);
+  font-style: italic;
+  font-weight: 700;
+  font-size: var(--fs-d3);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--cf-text-on-accent);
+  font-synthesis: none;
+  text-wrap: balance;
+}
+
+/* The payoff line inverts onto a near-black chip rather than switching to dark
+   type on the teal: measured, #111111 on brand teal is 2.88:1, which fails even
+   the 3:1 large-text floor. Bone on near-black is 16.8:1, and the inversion
+   reads like the stamped bands on the gym's boards. */
+.creed__last {
+  display: inline-block;
+  padding: var(--space-3xs) var(--space-sm);
+  background: var(--cf-surface-page);
+  color: var(--cf-text-strong);
+}
 
 /* ---- 9c-ii. Personal Training ------------------------------------------ */
 
@@ -1532,7 +1602,6 @@ main,
 /* .schedule-panel / -icon / -title / -desc / .schedule-cta-btn were removed
    with the old booking card. This section is prose plus two actions; a
    supporting photo lands here in the photos phase. */
-
 
 /* ---- 9d. Pricing -------------------------------------------------------
    The cards get the board treatment without new wrappers: .pricing-tier is
@@ -1686,7 +1755,6 @@ main,
   background: var(--cf-surface-accent-active);
   color: var(--cf-text-on-accent);
 }
-
 
 /* ---- 9e. Contact -------------------------------------------------------- */
 
@@ -1914,7 +1982,6 @@ main,
 #formAnnounce { padding-inline: var(--space-sm); }
 #formAnnounce:empty { padding: 0; }
 
-
 /* ---- 9f. Footer --------------------------------------------------------- */
 
 .footer {
@@ -2049,7 +2116,6 @@ main,
   text-align: center;
   row-gap: var(--space-3xs);
 }
-
 
 /* ============================================================================
    10. PRINT

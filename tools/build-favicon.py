@@ -34,11 +34,12 @@ TEAL = (0, 104, 109)      # --cf-teal, sampled from the gym's signage
 BONE = (244, 241, 236)    # --cf-bone
 
 # Monogram in its native 46x32 box. Identical to the paths in index.html.
-MARK_W, MARK_H = 46, 32
-C_PATH = [(21, 2), (10, 2), (2, 10), (2, 22), (10, 30), (21, 30),
-          (21, 23), (13, 23), (9, 19), (9, 13), (13, 9), (21, 9)]
-F_PATH = [(25, 2), (44, 2), (44, 9), (33, 9), (33, 13),
-          (42, 13), (42, 20), (33, 20), (33, 30), (25, 30)]
+MARK_W, MARK_H = 50, 44
+# Traced from an enlarged crop of the gym's board: every corner chamfered at
+# 45 degrees, no curves anywhere, and the F tucked into the C's aperture.
+# Keep these identical to the .logo-mark paths in index.html.
+C_PATH = [(25, 3), (11, 3), (3, 11), (3, 33), (11, 41), (25, 41), (21, 33), (14, 33), (10, 29), (10, 15), (14, 11), (21, 11)]
+F_PATH = [(28, 3), (47, 3), (47, 12), (37, 12), (37, 18), (46, 18), (46, 26), (37, 26), (37, 41), (28, 41)]
 
 ICO_SIZES = [16, 32, 48, 64, 128, 256]
 SUPERSAMPLE = 8           # draw big, shrink down; polygons alias badly at 16px
