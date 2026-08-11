@@ -347,6 +347,62 @@
       <div class="contact-grid">
 
         <div class="contact-info">
+
+          <!-- ===== TEXT US — primary contact path =====
+               Texting is how this business prefers to be reached, so it gets a
+               board of its own above the address rather than a line in a list.
+
+               The big number is an sms: link. On a phone that opens Messages
+               with the number filled in. On desktop sms: usually does nothing,
+               so the number is also large readable text and a copy button
+               appears next to it (revealed by main.js only when a clipboard
+               mechanism actually exists — see below). The tel: link is a
+               separate button so the number is never only reachable one way. -->
+          <article class="board contact-phone">
+            <div class="board__bar">
+              <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 21l2-4.9A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+              <h3 class="board__label">Text Us</h3>
+            </div>
+            <div class="board__body">
+              <p class="contact-phone__lead">The fastest way to reach us.</p>
+
+              <div class="contact-phone__row">
+                <!-- The "&amp;" is required — a bare "&" is invalid HTML. The
+                     "?&" before body= is the cross-platform-safe form; see the
+                     note in js/site-config.js. Prefilled body text is
+                     best-effort: iOS and Android honour it, most desktop
+                     handlers ignore it, and some carrier apps drop it. The
+                     link still opens a message to the right number regardless,
+                     which is the part that has to work. -->
+                <a class="contact-phone__number"
+                   data-link="sms"
+                   href="sms:+14693375839?&amp;body=Hi%20Country%20Fit%2C%20I%27d%20like%20more%20info%20about%20group%20classes.">(469) 337-5839</a>
+
+                <!-- Ships hidden. main.js reveals it only when a copy
+                     mechanism is actually available, so with JS off, over
+                     file://, or on an insecure origin no dead button appears.
+                     The aria-label is fixed while only the visible label
+                     swaps to "Copied" — changing a button's accessible name
+                     mid-interaction makes some screen readers announce twice
+                     alongside the live region. -->
+                <button type="button" id="copyPhone" class="copy-btn" hidden
+                        aria-label="Copy phone number">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="13" height="13"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span class="copy-btn__label" aria-hidden="true">Copy</span>
+                </button>
+              </div>
+
+              <p id="copyStatus" class="copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+
+              <div class="contact-phone__actions">
+                <a class="btn btn-accent"
+                   data-link="sms"
+                   href="sms:+14693375839?&amp;body=Hi%20Country%20Fit%2C%20I%27d%20like%20more%20info%20about%20group%20classes.">Text Us</a>
+                <a class="btn btn-outline" data-link="tel" href="tel:+14693375839">Call</a>
+              </div>
+            </div>
+          </article>
+
           <div class="info-block">
             <div class="info-icon" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -361,11 +417,12 @@
           </div>
           <div class="info-block">
             <div class="info-icon" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <!-- envelope; this block was "Text & Email" and still carried a
+                   phone handset after the phone moved to its own board -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16"/><path d="m2 6 10 7 10-7"/></svg>
             </div>
             <div class="info-content">
-              <h3 class="info-heading">Text &amp; Email</h3>
-              <p><a href="tel:+14693375839" data-link="tel">(469) 337-5839</a></p>
+              <h3 class="info-heading">Email</h3>
               <p><a href="mailto:info@countryfittx.com" data-link="email">info@countryfittx.com</a></p>
             </div>
           </div>
@@ -374,7 +431,14 @@
         <div class="contact-form-wrapper">
           <h3 class="contact-form-title">Send Us a Message</h3>
           <p class="contact-form-sub">We'd love to hear from you. We'll get back to you as soon as possible.</p>
-          <form class="contact-form" id="contactForm" novalidate>
+          <!-- action/method make the form work with JavaScript disabled. With
+               JS on, main.js preventDefault()s and posts via fetch so the page
+               does not navigate away. Previously the form had neither, so
+               without JS it silently did nothing — worse than not being there. -->
+          <form class="contact-form" id="contactForm" novalidate
+                action="https://formspree.io/f/meerenev" method="POST">
+            <!-- Formspree's native honeypot. Bots fill it; humans never see it. -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="u-honeypot" />
             <div class="form-group">
               <label for="name">Name</label>
               <input type="text" id="name" name="name" placeholder="Your name" required />
@@ -404,6 +468,10 @@
       <div class="footer-brand">
         <span class="nav-logo"><span class="logo-country">Country</span><span class="logo-fit">Fit</span></span>
         <p class="footer-tagline">Come Ready. Leave Proud.</p>
+        <p class="footer-contact">
+          <a data-link="sms"
+             href="sms:+14693375839?&amp;body=Hi%20Country%20Fit%2C%20I%27d%20like%20more%20info%20about%20group%20classes.">Text (469) 337-5839</a>
+        </p>
         <p class="footer-copy">&copy; <span id="footerYear"></span> Country Fit. All rights reserved.</p>
       </div>
       <div class="footer-links">

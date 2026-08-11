@@ -1593,6 +1593,107 @@ main,
   gap: var(--space-lg);
 }
 
+/* ---- Text-us board — the primary contact path -------------------------- */
+
+.contact-phone { margin-bottom: var(--space-lg); }
+
+.contact-phone__lead {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--cf-text-body);
+}
+
+.contact-phone__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+}
+
+/* Large enough to read and transcribe from across a desk, which is the point
+   on desktop where the sms: link does nothing. Tabular figures so the digits
+   line up. */
+.contact-phone__number {
+  font-family: var(--font-display);
+  font-size: var(--fs-d2);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-label);
+  font-variant-numeric: tabular-nums;
+  font-synthesis: none;
+  color: var(--cf-text-strong);
+}
+
+.contact-phone__number:hover { color: var(--cf-text-accent); }
+
+.contact-phone__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  width: 100%;
+}
+
+/* Desktop affordance only. Below 768px the sms: and tel: links actually work
+   and the sticky action bar is on screen, so copying the digits is redundant;
+   above it, sms: usually does nothing and this is how you get the number.
+   768px is the same line the action bar uses.
+
+   :not([hidden]) matters. A bare display rule would beat the UA stylesheet's
+   [hidden] { display: none } and the button would flash in before main.js has
+   decided whether copying is even possible. */
+.copy-btn { display: none; }
+
+@media (min-width: 48rem) {
+  .copy-btn:not([hidden]) { display: inline-flex; }
+}
+
+.copy-btn:not([hidden]) {
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3xs);
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  padding: var(--space-3xs) var(--space-2xs);
+  border: var(--bw-1) solid var(--cf-border-field);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--cf-text-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition);
+}
+
+.copy-btn svg { width: 1rem; height: 1rem; }
+
+.copy-btn:hover {
+  border-color: var(--cf-border-panel);
+  color: var(--cf-text-strong);
+}
+
+.copy-btn.is-copied {
+  border-color: var(--cf-ok);
+  color: var(--cf-ok);
+}
+
+/* Reserve the line so confirming a copy does not shift the layout. */
+.copy-status {
+  min-height: 1.25rem;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--cf-ok);
+}
+
+/* Honeypot: off-screen rather than display:none, which some bots detect. */
+.u-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
 .info-block {
   display: flex;
   gap: var(--space-sm);
@@ -1729,6 +1830,22 @@ main,
   margin-block: var(--space-3xs) var(--space-2xs);
   font-synthesis: none;
 }
+
+.footer-contact { margin-bottom: var(--space-2xs); }
+
+.footer-contact a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--cf-text-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-contact a:hover { color: var(--cf-text-strong); }
 
 .footer-copy { font-size: var(--fs-xs); color: var(--cf-text-muted); }
 

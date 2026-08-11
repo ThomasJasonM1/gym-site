@@ -93,6 +93,72 @@
     });
   }
 
+  /* ---- Click-to-copy phone number ---------------------------------------
+     sms: links frequently do nothing on desktop, so the number is shown as
+     large readable text with a copy affordance beside it. The button ships
+     hidden in the HTML and is only revealed once a copy mechanism is known to
+     exist — so with JS off, over file://, or on an insecure origin, no broken
+     button ever appears and the tel:/sms: links still work.
+     ---------------------------------------------------------------------- */
+  const copyBtn    = document.getElementById('copyPhone');
+  const copyStatus = document.getElementById('copyStatus');
+  let   copyTimer;
+
+  function canCopy() {
+    if (navigator.clipboard && window.isSecureContext) return true;
+    return !!(document.queryCommandSupported &&
+              document.queryCommandSupported('copy'));
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    // execCommand fallback. Required over plain http:// and file://, where
+    // navigator.clipboard is undefined.
+    return new Promise(function (resolve, reject) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+      document.body.removeChild(ta);
+      ok ? resolve() : reject(new Error('execCommand copy failed'));
+    });
+  }
+
+  function setCopyState(label, announcement) {
+    clearTimeout(copyTimer);
+    copyBtn.classList.add('is-copied');
+    copyBtn.querySelector('.copy-btn__label').textContent = label;
+    copyStatus.textContent = announcement;
+    copyTimer = setTimeout(function () {
+      copyBtn.classList.remove('is-copied');
+      copyBtn.querySelector('.copy-btn__label').textContent = 'Copy';
+      copyStatus.textContent = '';
+    }, 2500);
+  }
+
+  if (copyBtn && copyStatus && canCopy()) {
+    copyBtn.hidden = false;
+    copyBtn.addEventListener('click', function () {
+      // Derived from the registry so the digits are never a second literal.
+      const raw = (window.SITE && window.SITE.links.tel)
+        ? window.SITE.links.tel.replace(/^tel:/, '')
+        : '';
+      copyText(raw).then(function () {
+        setCopyState('Copied', 'Phone number copied to clipboard');
+      }).catch(function () {
+        const shown = (window.SITE && window.SITE.phoneDisplay) || raw;
+        setCopyState('Select it', 'Copy failed. The number is ' + shown);
+      });
+    });
+  }
+
   /* ---- Highlight today's row in the class schedule ----------------------
      Pure progressive enhancement. With JS off nothing is highlighted and the
      schedule reads exactly the same — the times live in the HTML, not here.
@@ -222,7 +288,12 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending…';
 
-      fetch('https://formspree.io/f/meerenev', {
+      // Endpoint comes from the registry, falling back to the form's own
+      // action so the two can never disagree.
+      const endpoint = (window.SITE && window.SITE.endpoints.contactForm) ||
+                       contactForm.getAttribute('action');
+
+      fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
