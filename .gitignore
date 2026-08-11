@@ -1,0 +1,39 @@
+# ============================================================================
+# Country Fit — .gitignore
+#
+# Camera originals are NOT tracked. Only the derived, web-optimised set in
+# assets/img/ is committed, because that is what actually gets uploaded to
+# Bluehost. Originals total ~175 MB across three folders; the derived set is
+# ~4 MB.
+#
+# Regenerate the derived set with:  python tools/build-images.py
+# Keep the originals backed up OUTSIDE this repo (Drive, Dropbox, or
+# C:\Users\<you>\Pictures\country-fit-originals\).
+# ============================================================================
+
+# Camera originals — source material for tools/build-images.py
+/assets/images/new_images/
+/assets/images/other-images/
+
+/assets/images/carousel/
+
+# Reviewable previews written by tools/build-images.py --contact-sheet
+/tools/preview/
+
+# Raw / phone-native formats should never be committed; browsers can't read them
+*.HEIC
+*.heic
+*.CR2
+*.cr2
+*.dng
+*.DNG
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
