@@ -93,6 +93,33 @@
     });
   }
 
+  /* ---- Sticky action bar: get out of the keyboard's way ------------------
+     The bar is position:fixed, so on mobile it floats above the on-screen
+     keyboard and covers the very field being typed into. Slide it away while
+     a form control in the page has focus.
+
+     No scroll handling is needed: because the bar is fixed, window.innerHeight
+     is unchanged and scroll-spy's threshold behaves identically. The only
+     layout effect is body padding-bottom, which just adds scrollable space
+     below the footer.
+     ---------------------------------------------------------------------- */
+  const actionBar = document.getElementById('actionBar');
+  if (actionBar) {
+    document.addEventListener('focusin', function (e) {
+      if (e.target.closest('form')) actionBar.classList.add('is-hidden');
+    });
+    document.addEventListener('focusout', function () {
+      // Deferred: during focusout, activeElement is briefly <body>, so an
+      // immediate check would flicker the bar between two fields.
+      setTimeout(function () {
+        const el = document.activeElement;
+        if (!el || !el.closest || !el.closest('form')) {
+          actionBar.classList.remove('is-hidden');
+        }
+      }, 60);
+    });
+  }
+
   /* ---- Scroll-spy: highlight active nav link ---- */
   // Build a map of section id → nav link
   const sectionIds = ['home', 'gallery', 'classes', 'pricing', 'contact'];

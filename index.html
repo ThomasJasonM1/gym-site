@@ -52,6 +52,16 @@
           <span class="logo-country">Country</span><span class="logo-fit">Fit</span>
         </a>
       </div>
+      <!-- Nav CTA. Deliberately OUTSIDE #navMenu so it is not hidden behind
+           the hamburger. Hidden below 768px, where the sticky action bar
+           carries the same action and showing both would be redundant.
+           href is the real literal; data-link reconciles it against
+           SITE.links in js/site-config.js. -->
+      <a class="btn btn-cta btn-cta--sm nav-cta"
+         data-link="free-class"
+         href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+         target="_blank" rel="noopener noreferrer">Free Class</a>
+
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>
@@ -82,7 +92,14 @@
       </p>
       <h1 class="hero-headline">Come Ready.<br />Leave Proud.</h1>
       <p class="hero-sub">Country Fit is where hard work meets heart. Join a gym that believes in you, your community, and the values that make this country great.</p>
-      <a href="#pricing" class="btn btn-primary hero-cta">View Online Training Plans</a>
+      <!-- Primary conversion action. Goes straight to signup, never through
+           the contact form. Same destination and same label as the nav button
+           and the sticky bar — one name for one thing, never "free trial". -->
+      <a class="btn btn-cta hero-cta"
+         data-link="free-class"
+         href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+         target="_blank" rel="noopener noreferrer">Claim Your Free Class</a>
+      <p class="hero-trust">All levels welcome. No experience required.</p>
     </div>
   </section>
 
@@ -281,6 +298,27 @@
       </div>
     </div>
   </footer>
+
+  <!-- ===== STICKY MOBILE ACTION BAR =====
+       Mobile only (<768px). Placed after </footer> on purpose: it is visually
+       last on the page, so it should be last in tab order too.
+       The "&amp;" in the sms: href is required — a bare "&" is invalid HTML.
+       The "?&" before body= is the cross-platform-safe form; see site-config.js. -->
+  <nav class="action-bar" id="actionBar" aria-label="Quick actions">
+    <a class="action-bar__btn action-bar__btn--text"
+       data-link="sms"
+       href="sms:+14693375839?&amp;body=Hi%20Country%20Fit%2C%20I%27d%20like%20more%20info%20about%20group%20classes.">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 21l2-4.9A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+      <span>Text Us</span>
+    </a>
+    <a class="action-bar__btn action-bar__btn--primary"
+       data-link="free-class"
+       href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+       target="_blank" rel="noopener noreferrer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>Free Class</span>
+    </a>
+  </nav>
 
   <!-- site-config.js must load before main.js — it defines window.SITE, which
        syncLinks() reconciles every [data-link] anchor against. -->

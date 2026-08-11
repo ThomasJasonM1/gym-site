@@ -217,6 +217,7 @@
 
   /* ---- Layout ------------------------------------------------------------ */
   --nav-height: 68px;
+  --action-bar-h: 63px;    /* 44 target + 2x8 padding + 3 top border */
   --measure:    62ch;      /* body-copy line-length cap */
   --container:  75rem;     /* 1200px */
 }
@@ -334,7 +335,7 @@ section { scroll-margin-top: var(--nav-height); }
   position: absolute;
   top: 50%;
   left: 50%;
-  translate: -50% -50%;
+  transform: translate(-50%, -50%);
   min-width: var(--tap-min);
   min-height: var(--tap-min);
   width: 100%;
@@ -364,7 +365,7 @@ section { scroll-margin-top: var(--nav-height); }
   .btn:hover,
   .board:hover,
   .pricing-card:hover,
-  .social-icon:hover { translate: none; }
+  .social-icon:hover { transform: none; }
 }
 
 /* Nothing may depend on texture or on a colour tier that is merely adequate.
@@ -600,12 +601,12 @@ main,
 /* Hard offset block, zero blur. Not a drop shadow — this brand has none. */
 @media (hover: hover) {
   .btn:hover {
-    translate: -2px -2px;
+    transform: translate(-2px, -2px);
     box-shadow: 2px 2px 0 0 var(--cf-black);
   }
 }
 
-.btn:active { translate: 0 0; box-shadow: none; }
+.btn:active { transform: none; box-shadow: none; }
 
 /* Bone fill, black label: 16.8:1. The loudest thing on the page. */
 .btn-primary {
@@ -645,6 +646,55 @@ main,
   color: var(--cf-text-on-invert);
 }
 
+/* ---- The free-class CTA ------------------------------------------------
+   One style for the single most important action on the site. It appears in
+   the nav, the hero, after the class schedule, and in the sticky mobile bar,
+   always with the same destination and the same words.
+
+   Bone on near-black is 16.8:1 — the loudest thing available. The permanent
+   teal offset block (not a hover effect) is what separates it from ordinary
+   .btn-primary buttons, and it speaks the brand's hard-edge language rather
+   than reaching for a glow or a gradient.
+   ---------------------------------------------------------------------- */
+.btn-cta {
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
+  border-color: var(--cf-surface-invert);
+  font-weight: 600;
+  box-shadow: var(--bw-2) var(--bw-2) 0 0 var(--cf-decor);
+}
+
+@media (hover: hover) {
+  .btn-cta:hover {
+    background: var(--cf-teal-bright);
+    border-color: var(--cf-teal-bright);
+    color: var(--cf-text-on-invert);      /* black on bright teal = 6.4:1 */
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 0 var(--cf-decor);
+  }
+}
+
+.btn-cta:active { transform: none; box-shadow: var(--bw-1) var(--bw-1) 0 0 var(--cf-decor); }
+
+/* Compact only in width and type size. The nav bar is 68px tall, so there is
+   no reason to drop below the 44px target height. */
+.btn-cta--sm {
+  padding-inline: var(--space-sm);
+  font-size: var(--fs-2xs);
+  box-shadow: var(--bw-1) var(--bw-1) 0 0 var(--cf-decor);
+}
+
+/* Hidden below 768px, where .action-bar carries the same action. Showing both
+   would put the identical button on screen twice. */
+.nav-cta { display: none; }
+
+@media (min-width: 48rem) {
+  .nav-cta {
+    display: inline-flex;
+    margin-inline-start: var(--space-2xs);
+  }
+}
+
 /* Quiet text link, underlined so it does not rely on colour alone. */
 .link-quiet {
   display: inline-flex;
@@ -680,7 +730,7 @@ main,
   border: var(--bw-panel) solid var(--cf-border-panel);
   border-radius: var(--radius);
   transition: border-color var(--transition), box-shadow var(--transition),
-              translate var(--transition);
+              transform var(--transition);
 }
 
 .board__bar {
@@ -745,7 +795,7 @@ main,
 @media (hover: hover) {
   .board--link:hover {
     border-color: var(--cf-border-accent);
-    translate: -3px -3px;
+    transform: translate(-3px, -3px);
     box-shadow: 3px 3px 0 0 var(--cf-decor);
   }
 }
@@ -839,15 +889,23 @@ main,
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-sm);
 }
 
+/* The brand takes the slack, so everything after it sits flush right.
+   space-between would spread brand / CTA / toggle / menu evenly and strand
+   the CTA in the middle of the bar. */
 .nav-brand {
   display: flex;
   align-items: center;
   gap: var(--space-2xs);
+  margin-inline-end: auto;
 }
+
+/* Explicit order: links, then CTA, then the hamburger. */
+.nav-menu   { order: 1; }
+.nav-cta    { order: 2; }
+.nav-toggle { order: 3; }
 
 .nav-logo {
   display: inline-flex;
@@ -895,15 +953,15 @@ main,
   bottom: 0.7rem;
   height: var(--bw-1);
   background: var(--cf-text-strong);
-  scale: 0 1;
-  transition: scale var(--transition);
+  transform: scaleX(0);
+  transition: transform var(--transition);
 }
 
 .nav-link:hover,
 .nav-link.active { color: var(--cf-text-strong); }
 
 .nav-link:hover::after,
-.nav-link.active::after { scale: 1 1; }
+.nav-link.active::after { transform: scaleX(1); }
 
 .nav-toggle {
   display: none;
@@ -924,7 +982,7 @@ main,
   transition: transform var(--transition), opacity var(--transition);
 }
 
-@media (max-width: 47.9375rem) {
+@media (max-width: 63.9375rem) {
   .nav-toggle { display: flex; }
 
   .nav-menu {
@@ -1033,6 +1091,96 @@ main,
 
 .hero-cta { font-size: var(--fs-base); padding-inline: var(--space-xl); }
 
+.hero-trust {
+  margin-top: var(--space-xs);
+  font-size: var(--fs-sm);
+  color: var(--cf-text-body);
+  letter-spacing: 0.02em;
+}
+
+
+/* ---- Sticky mobile action bar -----------------------------------------
+   Mobile only. Two 50/50 targets, per the brief.
+   env(safe-area-inset-*) only resolves to anything but 0 because the viewport
+   meta carries viewport-fit=cover — without that the bar sits under the
+   iPhone home indicator.
+   ---------------------------------------------------------------------- */
+
+.action-bar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: var(--z-bar);
+  display: flex;
+  background: var(--cf-surface-page);
+  border-block-start: var(--bw-panel) solid var(--cf-border-panel);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  transition: transform var(--transition);
+}
+
+.action-bar__btn {
+  flex: 1 1 0;                       /* 50/50 */
+  min-height: var(--tap-min);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--space-2xs) var(--space-3xs);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Teal fill, bone label: 5.9:1. */
+.action-bar__btn--text {
+  background: var(--cf-surface-accent);
+  color: var(--cf-text-on-accent);
+}
+
+/* Bone fill, black label: 16.8:1 — matches .btn-cta everywhere else. */
+.action-bar__btn--primary {
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
+}
+
+.action-bar__btn:active { filter: brightness(0.85); }
+
+/* The ring is drawn inside the button, because an outward offset would be
+   clipped by the viewport edge at the bottom of the screen. */
+.action-bar__btn:focus-visible {
+  outline: var(--bw-2) solid var(--cf-focus-ring);
+  outline-offset: calc(var(--bw-2) * -2);
+  box-shadow: none;
+}
+
+.action-bar__btn--primary:focus-visible { outline-color: var(--cf-focus-halo); }
+
+/* Slides out of the way of the on-screen keyboard. Without this it floats
+   above the keyboard and covers the field being typed into. */
+.action-bar.is-hidden { transform: translateY(110%); }
+
+@media (max-width: 47.9375rem) {
+  /* Reserve space so the bar can never cover the end of the footer. */
+  body {
+    padding-bottom: calc(var(--action-bar-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* The hero is 100svh, so its lower edge sits *behind* the fixed bar. Inset
+     the content by the bar's height, or the trust line under the CTA is
+     partially covered on a short phone. */
+  .hero {
+    padding-bottom: calc(var(--action-bar-h) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (min-width: 48rem) {
+  .action-bar { display: none; }
+}
+
 
 /* ---- 9b. Gallery / carousel --------------------------------------------
    Restyled only. This whole block, and the JS behind it, is removed in the
@@ -1078,7 +1226,7 @@ main,
 .carousel-btn {
   position: absolute;
   top: 50%;
-  translate: 0 -50%;
+  transform: translateY(-50%);
   z-index: var(--z-raised);
   width: var(--tap-min);
   height: var(--tap-min);
@@ -1106,7 +1254,7 @@ main,
   position: absolute;
   bottom: var(--space-3xs);
   left: 50%;
-  translate: -50% 0;
+  transform: translateX(-50%);
   z-index: var(--z-raised);
   display: flex;
   gap: var(--space-3xs);
@@ -1131,13 +1279,13 @@ main,
   height: 10px;
   background: var(--cf-text-body);
   border: var(--bw-hair) solid var(--cf-black);
-  transition: background var(--transition), scale var(--transition);
+  transition: background var(--transition), transform var(--transition);
 }
 
 /* Bone plus a size change — not teal, which would be 2.88:1 here. */
 .carousel-dot.active::before {
   background: var(--cf-text-strong);
-  scale: 1.4;
+  transform: scale(1.4);
 }
 
 
@@ -1207,13 +1355,13 @@ main,
   border-radius: var(--radius);
   text-align: center;
   transition: border-color var(--transition), box-shadow var(--transition),
-              translate var(--transition);
+              transform var(--transition);
 }
 
 @media (hover: hover) {
   .pricing-card:hover {
     border-color: var(--cf-border-accent);
-    translate: -3px -3px;
+    transform: translate(-3px, -3px);
     box-shadow: 3px 3px 0 0 var(--cf-decor);
   }
 }
@@ -1517,14 +1665,14 @@ main,
   color: var(--cf-text-body);
   border: var(--bw-1) solid var(--cf-border-rule);
   transition: background var(--transition), color var(--transition),
-              border-color var(--transition), translate var(--transition);
+              border-color var(--transition), transform var(--transition);
 }
 
 .social-icon:hover {
   background: var(--cf-surface-accent);
   border-color: var(--cf-border-panel);
   color: var(--cf-text-on-accent);
-  translate: 0 -2px;
+  transform: translateY(-2px);
 }
 
 
