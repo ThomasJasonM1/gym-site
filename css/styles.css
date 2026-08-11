@@ -1298,10 +1298,14 @@ main,
 .section-body {
   max-width: var(--measure);
   margin-inline: auto;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-sm);
   font-size: var(--fs-lead);
   color: var(--cf-text-body);
 }
+
+/* Paragraph rhythm inside the column, then a full gap before whatever the
+   section puts next (the schedule grid, the action buttons). */
+.section-body:last-of-type { margin-bottom: var(--space-xl); }
 
 /* The schedule is a wall of boards, so it reads like the printed class boards
    in the gym. One column on a phone, three across from 700px — never two,
@@ -1388,8 +1392,8 @@ main,
   text-transform: uppercase;
 }
 
-/* CTA pair below the schedule. */
-.classes-actions {
+/* CTA pair closing a section. Used by Group Classes and Personal Training. */
+.section-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -1410,25 +1414,9 @@ main,
   scroll-margin-top: var(--nav-height);
 }
 
-.schedule-panel {
-  max-width: 40rem;
-  margin-inline: auto;
-}
-
-.schedule-panel-icon { color: var(--cf-text-on-accent); }
-
-.schedule-panel-title {
-  font-size: var(--fs-d3);
-  color: var(--cf-text-display);
-}
-
-.schedule-panel-desc {
-  font-size: var(--fs-base);
-  color: var(--cf-text-body);
-  max-width: var(--measure);
-}
-
-.schedule-cta-btn { font-size: var(--fs-base); }
+/* .schedule-panel / -icon / -title / -desc / .schedule-cta-btn were removed
+   with the old booking card. This section is prose plus two actions; a
+   supporting photo lands here in the photos phase. */
 
 
 /* ---- 9d. Pricing -------------------------------------------------------
