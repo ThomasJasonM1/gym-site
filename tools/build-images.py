@@ -59,12 +59,14 @@ OUT_DEFAULT = REPO / "assets" / "img"
 # arbitrary cap. A gallery tile is ~380 CSS px in a 4-column 1440 layout, so
 # 1600px tiles would be ~4x the pixels needed and would blow the 2 MB budget.
 PRESETS = {
-    # name:        (widths,          aspect,  max_kb, fit)
-    "hero":        ([1600, 1000, 640], None,   180,   "contain"),
-    "hero-tall":   ([1000, 640],       (4, 5), 170,   "cover"),
-    "gallery":     ([960, 480],        (4, 5), 110,   "cover"),
-    "feature":     ([1200, 640],       (3, 2), 150,   "cover"),
-    "og":          ([1200],            (40, 21), 120, "cover"),  # 1200x630
+    # name:        (widths,            aspect,   max_kb, fit)
+    "hero":        ([1600, 1000, 640], None,     180,   "contain"),
+    # The hero photo fills the right half of a two-column layout, so at a 1440
+    # viewport it renders ~700 CSS px; 1400 covers that at 2x.
+    "hero-tall":   ([1400, 1000, 640], (4, 5),   170,   "cover"),
+    "gallery":     ([960, 480],        (4, 5),   110,   "cover"),
+    "feature":     ([1200, 640],       (4, 5),   150,   "cover"),
+    "og":          ([1200],            (40, 21), 120,   "cover"),  # 1200x630
 }
 
 JPEG_QUALITY_STEPS = [88, 84, 80, 76, 72, 68, 64, 60]
@@ -97,23 +99,30 @@ def load(path: Path) -> Image.Image:
     return Image.frombytes("RGB", img.size, img.tobytes())
 
 
-def crop_to_aspect(img: Image.Image, aspect) -> Image.Image:
-    """Centre-crop to a target aspect ratio."""
+def crop_to_aspect(img: Image.Image, aspect, focus=0.5) -> Image.Image:
+    """Crop to a target aspect ratio.
+
+    focus is where the kept band sits along the axis being trimmed, 0..1.
+    0.5 is a plain centre crop. A centre crop is wrong surprisingly often:
+    squeezing a 3:4 portrait into a 1.9:1 share card takes a band about a
+    quarter of the height, and on these photos that lands on somebody's chin.
+    """
     if aspect is None:
         return img
     tw, th = aspect
     target = tw / th
     w, h = img.size
     current = w / h
+    focus = min(max(focus, 0.0), 1.0)
 
     if abs(current - target) < 0.001:
         return img
     if current > target:                     # too wide, trim the sides
         new_w = int(round(h * target))
-        left = (w - new_w) // 2
+        left = int(round((w - new_w) * focus))
         return img.crop((left, 0, left + new_w, h))
     new_h = int(round(w / target))           # too tall, trim top/bottom
-    top = (h - new_h) // 2
+    top = int(round((h - new_h) * focus))
     return img.crop((0, top, w, top + new_h))
 
 
@@ -134,10 +143,10 @@ def encode(img: Image.Image, fmt: str, max_kb: int):
     return last                              # smallest we could manage
 
 
-def build(path: Path, name: str, preset: str, outdir: Path):
+def build(path: Path, name: str, preset: str, outdir: Path, focus: float = 0.5):
     widths, aspect, max_kb, _fit = PRESETS[preset]
     base = load(path)
-    base = crop_to_aspect(base, aspect)
+    base = crop_to_aspect(base, aspect, focus)
     outdir.mkdir(parents=True, exist_ok=True)
 
     made, biggest = [], None
@@ -207,6 +216,8 @@ def main():
     ap.add_argument("--out", type=Path, default=OUT_DEFAULT)
     ap.add_argument("--name", help="output basename, lowercase-kebab")
     ap.add_argument("--preset", default="gallery", choices=sorted(PRESETS))
+    ap.add_argument("--focus", type=float, default=0.5,
+                    help="0..1 along the trimmed axis. 0=top/left, 1=bottom/right.")
     ap.add_argument("--list", action="store_true", help="list sources and exit")
     ap.add_argument("--contact-sheet", action="store_true",
                     help="write reviewable previews to tools/preview/")
@@ -243,7 +254,7 @@ def main():
         sys.exit(f"Not found: {path}")
 
     print(f"{path.name}  ->  preset '{args.preset}'")
-    build(path, args.name, args.preset, args.out)
+    build(path, args.name, args.preset, args.out, args.focus)
 
 
 if __name__ == "__main__":

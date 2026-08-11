@@ -21,11 +21,10 @@
   <meta property="og:title" content="Country Fit | Group Classes &amp; Personal Training in Farmersville, TX" />
   <meta property="og:description" content="All levels welcome. No experience required. Claim your free class." />
   <meta property="og:url" content="https://countryfittx.com/" />
-  <!-- TODO(phase 6): produce assets/img/og-cover-1200x630.jpg from the gym photos. -->
-  <meta property="og:image" content="https://countryfittx.com/assets/img/og-cover-1200x630.jpg" />
+  <meta property="og:image" content="https://countryfittx.com/assets/img/og-cover-1200.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Members of Country Fit after a group class in Farmersville, Texas" />
+  <meta property="og:image:alt" content="The Country Fit gym floor: dumbbell racks and benches beneath a hand-painted Country Fit sign and an American flag" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" sizes="32x32" />
@@ -83,6 +82,28 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="home">
+    <!-- A real <img>, not a CSS background: only an element can take part in
+         srcset, and only an element can be given fetchpriority. This is the
+         LCP image, so it is eager and high priority while everything else on
+         the page is lazy. Explicit width/height give it an intrinsic ratio,
+         so it reserves its box before the bytes arrive and contributes no CLS.
+         On mobile it fills the hero behind the scrim; from 1024px it becomes
+         the right-hand column of a two-column layout. -->
+    <picture class="hero-media">
+      <source type="image/webp"
+              srcset="assets/img/hero-overhead-press-640.webp 640w,
+                      assets/img/hero-overhead-press-1000.webp 1000w,
+                      assets/img/hero-overhead-press-1400.webp 1400w"
+              sizes="(min-width: 64rem) 50vw, 100vw" />
+      <img src="assets/img/hero-overhead-press-1000.jpg"
+           srcset="assets/img/hero-overhead-press-640.jpg 640w,
+                   assets/img/hero-overhead-press-1000.jpg 1000w,
+                   assets/img/hero-overhead-press-1400.jpg 1400w"
+           sizes="(min-width: 64rem) 50vw, 100vw"
+           width="1400" height="1750"
+           alt="A Country Fit member pressing two dumbbells overhead beneath the gym's hand-painted Country Fit sign and an American flag."
+           fetchpriority="high" decoding="async" />
+    </picture>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <!-- Star separators are generated in CSS, not typed here. As literal
@@ -214,6 +235,33 @@
       }
       </script>
 
+      <!-- Scroll-snap strip on a phone, plain grid from 700px. tabindex and an
+           accessible name because a horizontally scrollable region has to be
+           reachable and operable by keyboard. -->
+      <ul class="photo-strip" tabindex="0" role="group" aria-label="Photos from group classes">
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/class-partner-workout-480.webp 480w, assets/img/class-partner-workout-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/class-partner-workout-960.jpg" srcset="assets/img/class-partner-workout-480.jpg 480w, assets/img/class-partner-workout-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="Two members side by side, dumbbells racked at their shoulders, working through a class together in the main training bay." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/class-member-dumbbells-480.webp 480w, assets/img/class-member-dumbbells-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/class-member-dumbbells-960.jpg" srcset="assets/img/class-member-dumbbells-480.jpg 480w, assets/img/class-member-dumbbells-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="A smiling member resting two dumbbells on her shoulders in front of the squat racks." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/class-overhead-press-480.webp 480w, assets/img/class-overhead-press-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/class-overhead-press-960.jpg" srcset="assets/img/class-overhead-press-480.jpg 480w, assets/img/class-overhead-press-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="A member locking two dumbbells out overhead with the workout clock counting behind him." />
+          </picture>
+        </li>
+      </ul>
+
       <div class="section-actions">
         <a class="btn btn-cta"
            data-link="free-class"
@@ -252,6 +300,14 @@
         pricing and package options.
       </p>
 
+      <figure class="training-media">
+        <picture>
+          <source type="image/webp" srcset="assets/img/training-front-squat-640.webp 640w, assets/img/training-front-squat-1200.webp 1200w" sizes="(min-width: 48rem) 40vw, 90vw" />
+          <img src="assets/img/training-front-squat-1200.jpg" srcset="assets/img/training-front-squat-640.jpg 640w, assets/img/training-front-squat-1200.jpg 1200w" sizes="(min-width: 48rem) 40vw, 90vw" width="1200" height="1500" loading="lazy" decoding="async"
+               alt="An athlete at the bottom of a dumbbell front squat, elbows driven high, alone on the gym floor." />
+        </picture>
+      </figure>
+
       <div class="section-actions">
         <!-- btn-primary, not btn-cta: the teal-offset CTA style is reserved for
              the free class so it stays the single loudest action on the page. -->
@@ -271,14 +327,57 @@
         <h2 class="section-title">Our Gym</h2>
         <p class="section-sub">Real people. Real results. Real community.</p>
       </div>
-      <div class="carousel" id="carousel">
-        <div class="carousel-track" id="carouselTrack">
-          <!-- Slides injected dynamically from assets/carousel/carousel-config.js -->
-        </div>
-        <button class="carousel-btn carousel-btn--prev" id="carouselPrev" aria-label="Previous photo">&#8249;</button>
-        <button class="carousel-btn carousel-btn--next" id="carouselNext" aria-label="Next photo">&#8250;</button>
-        <div class="carousel-dots" id="carouselDots"></div>
-      </div>
+      <!-- Replaced the hand-rolled carousel. It rendered nothing with JS
+           disabled, autoplayed for 4.5s with no pause control (WCAG 2.2.2),
+           kept every offscreen slide in the tab order, gave all eleven images
+           the same alt text, and letterboxed portrait photos against a dark
+           background. A strip that becomes a grid needs no JavaScript at all,
+           shows six faces at once instead of one, and lets every photo carry
+           its own description. -->
+      <ul class="photo-strip" tabindex="0" role="group" aria-label="Photos of the gym">
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/gym-floor-through-rings-480.webp 480w, assets/img/gym-floor-through-rings-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/gym-floor-through-rings-960.jpg" srcset="assets/img/gym-floor-through-rings-480.jpg 480w, assets/img/gym-floor-through-rings-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="The gym floor framed through a gymnastic ring: dumbbell racks, wall-mounted benches and the Country Fit sign beneath an American flag." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/gym-benches-wall-sign-480.webp 480w, assets/img/gym-benches-wall-sign-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/gym-benches-wall-sign-960.jpg" srcset="assets/img/gym-benches-wall-sign-480.jpg 480w, assets/img/gym-benches-wall-sign-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="Workout benches racked on the plywood wall below the hand-painted Country Fit sign." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/gym-member-dumbbell-hold-480.webp 480w, assets/img/gym-member-dumbbell-hold-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/gym-member-dumbbell-hold-960.jpg" srcset="assets/img/gym-member-dumbbell-hold-480.jpg 480w, assets/img/gym-member-dumbbell-hold-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="A member holding two dumbbells at her shoulders directly in front of the Country Fit wall sign." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/gym-barbells-rings-480.webp 480w, assets/img/gym-barbells-rings-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/gym-barbells-rings-960.jpg" srcset="assets/img/gym-barbells-rings-480.jpg 480w, assets/img/gym-barbells-rings-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="Loaded barbells stored upright beside a row of wooden gymnastic rings." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/gym-press-under-flag-480.webp 480w, assets/img/gym-press-under-flag-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/gym-press-under-flag-960.jpg" srcset="assets/img/gym-press-under-flag-480.jpg 480w, assets/img/gym-press-under-flag-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="A member pressing a dumbbell overhead next to the climbing rope, wearing a stars-and-stripes headband." />
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source type="image/webp" srcset="assets/img/gym-wall-banners-480.webp 480w, assets/img/gym-wall-banners-960.webp 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" />
+            <img src="assets/img/gym-wall-banners-960.jpg" srcset="assets/img/gym-wall-banners-480.jpg 480w, assets/img/gym-wall-banners-960.jpg 960w" sizes="(min-width: 43.75rem) 33vw, 78vw" width="960" height="1200" loading="lazy" decoding="async"
+                 alt="Banners and a Texas flag hung along the gym wall above the workout clock." />
+          </picture>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -520,7 +619,6 @@
   <!-- site-config.js must load before main.js — it defines window.SITE, which
        syncLinks() reconciles every [data-link] anchor against. -->
   <script src="js/site-config.js"></script>
-  <script src="assets/carousel/carousel-config.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

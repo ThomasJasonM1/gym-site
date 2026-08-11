@@ -1032,18 +1032,34 @@ main,
   /* svh, not vh. On mobile vh resolves to the LARGE viewport, so the bottom of
      the hero — where the primary CTA lives — sits behind browser chrome. */
   min-height: 100svh;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   text-align: center;
   overflow: hidden;
   padding-top: var(--nav-height);
-  background: var(--cf-surface-page)
-              url('../assets/images/hero-bg.jpg') center / cover no-repeat;
+  background: var(--cf-surface-page);
 }
 
 @supports not (min-height: 100svh) {
   .hero { min-height: 100vh; }
+}
+
+/* Mobile: the photo fills the hero behind the scrim. */
+.hero-media {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The subject is in the lower half of the frame; bias the crop down so her
+     head is not the first thing cut on a short viewport. */
+  object-position: 50% 35%;
 }
 
 /* Flat scrim, not a gradient. 0.85 is a measured floor: below it, gray body
@@ -1073,6 +1089,57 @@ main,
   padding-inline: var(--space-md);
 }
 
+/* Desktop: two columns. Copy sits on flat colour rather than over a photo, so
+   its contrast is guaranteed rather than dependent on what is behind it, and
+   the headline paints without waiting on the image — which is the LCP win. The
+   photo keeps its native portrait shape instead of being cropped to a band. */
+@media (min-width: 64rem) {
+  .hero {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    text-align: left;
+    justify-items: stretch;
+  }
+
+  /* relative + an absolutely positioned img, NOT a static img in the cell.
+     A 4:5 image laid out statically at ~half of a wide viewport is ~960px
+     tall, which drives the grid row past 100svh and pushes the CTA below the
+     fold. Taking the img out of flow lets the row be sized by min-height
+     instead, and object-fit crops the photo to whatever that height is. */
+  .hero-media {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: stretch;
+    overflow: hidden;
+    border-inline-start: var(--bw-panel) solid var(--cf-border-panel);
+  }
+
+  .hero-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+
+  .hero-content {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+    max-width: 34rem;
+    padding-inline: var(--space-xl);
+  }
+
+  /* No photo behind the text on this layout, so no scrim is needed. */
+  .hero-overlay { display: none; }
+
+  .hero-eyebrow { align-self: start; }
+  .hero-sub { margin-inline: 0; }
+}
+
 .hero-eyebrow { margin-bottom: var(--space-sm); }
 
 .hero-headline {
@@ -1087,6 +1154,12 @@ main,
   max-width: 34rem;
   margin-inline: auto;
   margin-bottom: var(--space-md);
+}
+
+/* The split layout gives the copy half the width, so the full-bleed display
+   step would overflow the column. Step down one. */
+@media (min-width: 64rem) {
+  .hero-headline { font-size: var(--fs-d1); }
 }
 
 .hero-cta { font-size: var(--fs-base); padding-inline: var(--space-xl); }
@@ -1182,110 +1255,82 @@ main,
 }
 
 
-/* ---- 9b. Gallery / carousel --------------------------------------------
-   Restyled only. This whole block, and the JS behind it, is removed in the
-   photos phase and replaced with a scroll-snap strip that becomes a grid.
+/* ---- 9b. Photo strip / grid --------------------------------------------
+   Replaces the carousel. Horizontal scroll-snap on a phone so it still feels
+   swipeable, a plain grid from 700px so every photo is visible at once.
+   No JavaScript, no autoplay, nothing to pause, and every tile keeps its own
+   alt text.
+
+   Uniform 4/5 tiles: the source photos are portrait, so a shared portrait
+   aspect crops gently, avoids the pillarboxing the 16/9 carousel produced, and
+   — with width/height on every <img> — reserves the exact box before the bytes
+   land, so the grid contributes no layout shift.
    ---------------------------------------------------------------------- */
 
 .gallery { padding-block: var(--space-section); }
 
-.carousel {
-  position: relative;
+.photo-strip {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--space-md);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.photo-strip > li {
+  flex: 0 0 78%;
+  scroll-snap-align: start;
+}
+
+.photo-strip picture { display: block; }
+
+.photo-strip img {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  min-height: 240px;
-  max-height: 680px;
-  overflow: hidden;
-  background: var(--cf-surface-panel);
-  border: var(--bw-panel) solid var(--cf-border-panel);
-  user-select: none;
-}
-
-.carousel-track {
-  display: flex;
-  height: 100%;
-  transition: transform 0.6s var(--ease-out);
-}
-
-.carousel-slide {
-  flex: 0 0 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--cf-surface-panel);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.carousel-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: var(--z-raised);
-  width: var(--tap-min);
-  height: var(--tap-min);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  line-height: 1;
-  background: var(--cf-surface-page);
-  color: var(--cf-text-strong);
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: var(--focal, 50% 50%);
   border: var(--bw-1) solid var(--cf-border-panel);
-  border-radius: var(--radius);
-  transition: background var(--transition), color var(--transition);
 }
 
-.carousel-btn:hover {
-  background: var(--cf-surface-invert);
-  color: var(--cf-text-on-invert);
+/* The strip is focusable so it can be scrolled from the keyboard; give that
+   focus somewhere visible to land. */
+.photo-strip:focus-visible {
+  outline: var(--bw-2) solid var(--cf-focus-ring);
+  outline-offset: var(--bw-2);
 }
 
-.carousel-btn--prev { left: var(--space-2xs); }
-.carousel-btn--next { right: var(--space-2xs); }
-
-.carousel-dots {
-  position: absolute;
-  bottom: var(--space-3xs);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--z-raised);
-  display: flex;
-  gap: var(--space-3xs);
+@media (min-width: 43.75rem) {
+  .photo-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .photo-strip > li { flex: initial; }
 }
 
-/* 44px hit area with a small visual mark. Sized and anchored so the target
-   stays inside the carousel box, which is overflow:hidden. */
-.carousel-dot {
-  width: var(--tap-min);
-  height: var(--tap-min);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  padding: 0;
+/* Three columns at every width above the strip breakpoint. Six photos then
+   read as two balanced rows of three, and each tile stays around 380px wide —
+   which is also what the sizes attribute promises, so the browser picks the
+   960w variant rather than upscaling the 480. Six across made 180px thumbnails
+   nobody can read. */
+
+/* Supporting photo in Personal Training. */
+.training-media {
+  max-width: 22rem;
+  margin: 0 auto var(--space-xl);
 }
 
-.carousel-dot::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  background: var(--cf-text-body);
-  border: var(--bw-hair) solid var(--cf-black);
-  transition: background var(--transition), transform var(--transition);
-}
-
-/* Bone plus a size change — not teal, which would be 2.88:1 here. */
-.carousel-dot.active::before {
-  background: var(--cf-text-strong);
-  transform: scale(1.4);
+.training-media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: var(--bw-2) solid var(--cf-border-panel);
 }
 
 
@@ -1904,7 +1949,9 @@ main,
 
 @media print {
   body::before, body::after { display: none; }
-  .navbar, .nav-toggle, .carousel-btn, .carousel-dots, .contact-form { display: none; }
+  .navbar, .nav-toggle, .contact-form, .action-bar { display: none; }
+  /* A horizontal scroll container prints as a single clipped tile. */
+  .photo-strip { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
   /* Named keywords, not hex — the "no literals outside :root" rule holds here
      too, and paper is genuinely black-on-white regardless of the brand. */
   body { background: white; color: black; }
