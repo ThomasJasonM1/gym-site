@@ -68,9 +68,11 @@
         <span class="hamburger-bar"></span>
       </button>
       <ul class="nav-menu" id="navMenu">
+        <!-- Nav order mirrors page order. Keep them in step. -->
         <li><a href="#home" class="nav-link active">Home</a></li>
-        <li><a href="#gallery" class="nav-link">Our Gym</a></li>
         <li><a href="#classes" class="nav-link">Classes</a></li>
+        <li><a href="#training" class="nav-link">Personal Training</a></li>
+        <li><a href="#gallery" class="nav-link">Our Gym</a></li>
         <li><a href="#pricing" class="nav-link">Online Training</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
@@ -103,29 +105,137 @@
     </div>
   </section>
 
-  <!-- ===== PHOTO GALLERY ===== -->
-  <section class="gallery" id="gallery">
+  <!-- ===== GROUP CLASSES ===== -->
+  <section class="classes" id="classes">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Our Gym</h2>
-        <p class="section-sub">Real people. Real results. Real community.</p>
+        <h2 class="section-title">Group Classes</h2>
       </div>
-      <div class="carousel" id="carousel">
-        <div class="carousel-track" id="carouselTrack">
-          <!-- Slides injected dynamically from assets/carousel/carousel-config.js -->
+
+      <p class="section-body">
+        Experience the energy of training together in a supportive, coach-led environment.
+        Our group classes combine strength, conditioning, and functional fitness with workouts
+        that are challenging, scalable, and designed for every fitness level. Whether you're
+        just getting started or looking to push your limits, you'll be coached every step of
+        the way while becoming part of a community that motivates, encourages, and celebrates
+        your progress.
+      </p>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           CLASS SCHEDULE — SINGLE SOURCE OF TRUTH
+
+           Class times exist in exactly two places and BOTH are in this block:
+             1. the <dl class="schedule"> below   — what people read
+             2. the JSON-LD openingHoursSpecification immediately after it
+                — what search engines read
+
+           They are adjacent on purpose: one screenful, one diff hunk, so it is
+           not possible to update one and miss the other. Change the schedule
+           => edit both, in the same commit. Do NOT restate class times
+           anywhere else on the site, and do NOT move the JSON-LD into <head>
+           (it is position-independent, and putting it here is what keeps the
+           two representations together).
+
+           This is plain HTML, not a JS array, because the page must work with
+           JavaScript disabled. data-days holds ISO weekday numbers (Mon=1)
+           and is used only to highlight today — purely decorative.
+           ══════════════════════════════════════════════════════════════════ -->
+      <dl class="schedule">
+
+        <div class="board schedule__row" data-days="1 2 3 4">
+          <dt class="board__bar schedule__day">
+            <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span class="schedule__day-name">Monday&ndash;Thursday</span>
+          </dt>
+          <dd class="board__body schedule__slots">
+            <ul class="schedule__times">
+              <li><time datetime="06:00">6:00 AM</time></li>
+              <li><time datetime="08:30">8:30 AM</time></li>
+              <li><time datetime="18:00">6:00 PM</time></li>
+            </ul>
+          </dd>
         </div>
-        <button class="carousel-btn carousel-btn--prev" id="carouselPrev" aria-label="Previous photo">&#8249;</button>
-        <button class="carousel-btn carousel-btn--next" id="carouselNext" aria-label="Next photo">&#8250;</button>
-        <div class="carousel-dots" id="carouselDots"></div>
+
+        <div class="board schedule__row" data-days="5">
+          <dt class="board__bar schedule__day">
+            <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span class="schedule__day-name">Friday</span>
+          </dt>
+          <dd class="board__body schedule__slots">
+            <ul class="schedule__times">
+              <li><time datetime="06:00">6:00 AM</time></li>
+              <li><time datetime="08:30">8:30 AM</time></li>
+            </ul>
+          </dd>
+        </div>
+
+        <div class="board schedule__row" data-days="6">
+          <dt class="board__bar schedule__day">
+            <svg class="board__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span class="schedule__day-name">Saturday</span>
+          </dt>
+          <dd class="board__body schedule__slots">
+            <ul class="schedule__times">
+              <li><time datetime="08:30">8:30 AM</time></li>
+            </ul>
+          </dd>
+        </div>
+
+      </dl>
+
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HealthClub",
+        "@id": "https://countryfittx.com/#gym",
+        "name": "Country Fit LLC",
+        "url": "https://countryfittx.com/",
+        "telephone": "+1-469-337-5839",
+        "email": "info@countryfittx.com",
+        "priceRange": "$$",
+        "sameAs": ["https://www.facebook.com/profile.php?id=61578892311382"],
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "2409 Country Road 645",
+          "addressLocality": "Farmersville",
+          "addressRegion": "TX",
+          "postalCode": "75442",
+          "addressCountry": "US"
+        },
+        "areaServed": ["Farmersville", "Princeton", "Josephine", "Nevada", "Greenville", "Collin County"],
+        "openingHoursSpecification": [
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "06:00", "closes": "07:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "08:30", "closes": "09:30" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "18:00", "closes": "19:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "06:00", "closes": "07:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "08:30", "closes": "09:30" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:30", "closes": "09:30" }
+        ]
+      }
+      </script>
+
+      <div class="classes-actions">
+        <a class="btn btn-cta"
+           data-link="free-class"
+           href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+           target="_blank" rel="noopener noreferrer">Claim Your Free Class</a>
+        <a class="btn btn-outline"
+           data-link="plans"
+           href="https://45bu3fl.pushpress.com/landing/plans?category=plcat_f918a2471c6940"
+           target="_blank" rel="noopener noreferrer">View Membership Plans</a>
       </div>
     </div>
   </section>
 
-  <!-- ===== CLASS SCHEDULES ===== -->
-  <section class="classes" id="classes">
+  <!-- ===== PERSONAL TRAINING ===== -->
+  <section class="training" id="training">
+    <!-- #schedule kept as an alias: this section used to carry that id and it
+         may be linked from outside the site. Done in markup, not via a JS
+         hash redirect, so it still resolves with JavaScript disabled. -->
+    <div id="schedule" class="anchor-alias"></div>
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Schedule</h2>
+        <h2 class="section-title">Personal Training</h2>
         <p class="section-sub">Your first step starts here. Reserve your spot today.</p>
       </div>
 
@@ -151,6 +261,24 @@
           <a href="#contact" class="link-quiet">Contact us for pricing</a>
         </div>
       </article>
+    </div>
+  </section>
+
+  <!-- ===== PHOTO GALLERY ===== -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Our Gym</h2>
+        <p class="section-sub">Real people. Real results. Real community.</p>
+      </div>
+      <div class="carousel" id="carousel">
+        <div class="carousel-track" id="carouselTrack">
+          <!-- Slides injected dynamically from assets/carousel/carousel-config.js -->
+        </div>
+        <button class="carousel-btn carousel-btn--prev" id="carouselPrev" aria-label="Previous photo">&#8249;</button>
+        <button class="carousel-btn carousel-btn--next" id="carouselNext" aria-label="Next photo">&#8250;</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+      </div>
     </div>
   </section>
 
@@ -282,8 +410,9 @@
         <h4 class="footer-heading">Quick Links</h4>
         <ul>
           <li><a href="#home">Home</a></li>
-          <li><a href="#gallery">Our Gym</a></li>
           <li><a href="#classes">Classes</a></li>
+          <li><a href="#training">Personal Training</a></li>
+          <li><a href="#gallery">Our Gym</a></li>
           <li><a href="#pricing">Online Training</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>

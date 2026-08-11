@@ -93,6 +93,20 @@
     });
   }
 
+  /* ---- Highlight today's row in the class schedule ----------------------
+     Pure progressive enhancement. With JS off nothing is highlighted and the
+     schedule reads exactly the same — the times live in the HTML, not here.
+     ---------------------------------------------------------------------- */
+  (function markToday() {
+    // JS getDay() is Sun=0; data-days uses ISO weekdays, Mon=1..Sun=7.
+    const iso = ((new Date().getDay() + 6) % 7) + 1;
+    document.querySelectorAll('.schedule__row[data-days]').forEach(function (row) {
+      if (row.dataset.days.split(' ').indexOf(String(iso)) !== -1) {
+        row.classList.add('is-today');
+      }
+    });
+  })();
+
   /* ---- Sticky action bar: get out of the keyboard's way ------------------
      The bar is position:fixed, so on mobile it floats above the on-screen
      keyboard and covers the very field being typed into. Slide it away while
@@ -122,7 +136,9 @@
 
   /* ---- Scroll-spy: highlight active nav link ---- */
   // Build a map of section id → nav link
-  const sectionIds = ['home', 'gallery', 'classes', 'pricing', 'contact'];
+  /* Must match the DOM order of the sections, and the nav order with it.
+     A stale entry here breaks scroll-spy silently — there is no error. */
+  const sectionIds = ['home', 'classes', 'training', 'gallery', 'pricing', 'contact'];
 
   /* Measure the navbar rather than parsing the --nav-height token.
      getPropertyValue() returns the *specified* value, so a token written in

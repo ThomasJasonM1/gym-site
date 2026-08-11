@@ -1289,9 +1289,126 @@ main,
 }
 
 
-/* ---- 9c. Classes / booking panel ---------------------------------------- */
+/* ---- 9c. Group Classes -------------------------------------------------- */
 
 .classes { padding-block: var(--space-section); }
+
+/* Section body copy. Left-aligned inside a centred, measure-capped column —
+   a paragraph this long is markedly harder to read centred. */
+.section-body {
+  max-width: var(--measure);
+  margin-inline: auto;
+  margin-bottom: var(--space-xl);
+  font-size: var(--fs-lead);
+  color: var(--cf-text-body);
+}
+
+/* The schedule is a wall of boards, so it reads like the printed class boards
+   in the gym. One column on a phone, three across from 700px — never two,
+   which would leave a single orphaned day on the second row. */
+.schedule {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+@media (min-width: 43.75rem) {
+  .schedule { grid-template-columns: repeat(3, 1fr); }
+
+  /* Keep every teal bar on the row the same height even if a day name wraps;
+     otherwise the bars stagger and the wall-of-boards read falls apart. */
+  @supports (grid-template-rows: subgrid) {
+    .schedule { grid-auto-rows: auto 1fr; }
+    .schedule__row { grid-row: span 2; grid-template-rows: subgrid; }
+  }
+}
+
+/* dt carrying the board's header bar.
+   Smaller than --fs-d4: in a three-column grid the bar is only ~215px wide,
+   and at 25px "Monday–Thursday" wrapped and ran under the Today badge.
+   flex-wrap is the belt-and-braces — if the name still needs two lines at some
+   width, the badge drops below it instead of overlapping. */
+.schedule__day {
+  flex-wrap: wrap;
+  row-gap: var(--space-3xs);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.0625rem, 0.93rem + 0.6vw, 1.375rem);   /* 17 -> 22 */
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+/* min-width:0 lets the name shrink and wrap inside itself. Without it the
+   whole label is an unshrinkable flex item and drops below the icon, leaving
+   the icon orphaned on its own line around 700px. */
+.schedule__day-name { min-width: 0; }
+
+/* dd carrying the board's body. The reset already zeroes the UA's 40px
+   margin-inline-start on dd. */
+.schedule__slots { align-items: stretch; }
+
+.schedule__times {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  width: 100%;
+}
+
+.schedule__times li {
+  padding: var(--space-2xs) var(--space-xs);
+  background: var(--cf-surface-raised);
+  border-inline-start: var(--bw-2) solid var(--cf-decor);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--cf-text-strong);
+}
+
+/* Today's column. Progressive enhancement only — see markToday() in main.js.
+   Marked with a bright-teal edge plus a label, never colour alone. */
+.schedule__row.is-today { border-color: var(--cf-border-accent); }
+
+/* The marker sits in the board BODY, not the header bar. In the bar it pushed
+   the day name onto a second line, which made the teal bars different heights
+   across the row and broke the wall-of-boards alignment. */
+.schedule__row.is-today .schedule__slots::before {
+  content: 'Today';
+  align-self: flex-start;
+  padding: 0.1rem var(--space-2xs);
+  margin-bottom: var(--space-3xs);
+  background: var(--cf-surface-invert);
+  color: var(--cf-text-on-invert);
+  font-family: var(--font-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+/* CTA pair below the schedule. */
+.classes-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+
+/* ---- 9c-ii. Personal Training ------------------------------------------ */
+
+.training { padding-block: var(--space-section); }
+
+/* Zero-height marker preserving the old #schedule anchor. Needs the same
+   scroll offset as a real section or the jump lands under the fixed navbar. */
+.anchor-alias {
+  position: absolute;
+  width: 0;
+  height: 0;
+  scroll-margin-top: var(--nav-height);
+}
 
 .schedule-panel {
   max-width: 40rem;
