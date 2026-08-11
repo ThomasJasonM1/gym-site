@@ -907,13 +907,27 @@ main,
 .nav-cta    { order: 2; }
 .nav-toggle { order: 3; }
 
-/* CF monogram badge. Sized in em so it tracks the wordmark beside it. */
+/* CF monogram. Sized in em so it tracks the wordmark beside it. */
 .logo-mark {
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.35em;
+  height: 0.94em;          /* the mark is 46x32, not square */
   flex: 0 0 auto;
-  margin-inline-end: 0.4em;
   color: var(--cf-text-display);
+}
+
+/* The vertical rule that divides mark from wordmark on the gym's boards. */
+.logo-rule {
+  flex: 0 0 auto;
+  width: var(--bw-hair);
+  align-self: stretch;
+  min-height: 1.2em;
+  margin-inline: 0.55em;
+  background: var(--cf-border-rule);
+}
+
+.logo-word {
+  color: var(--cf-text-display);
+  white-space: nowrap;
 }
 
 .nav-logo {
@@ -927,8 +941,6 @@ main,
   font-synthesis: none;
 }
 
-.logo-country { color: var(--cf-text-display); }
-.logo-fit     { color: var(--cf-text-accent); margin-inline-start: 0.22em; }
 
 .nav-menu {
   display: flex;
@@ -1036,54 +1048,35 @@ main,
 
 /* ---- 9a. Hero ----------------------------------------------------------- */
 
+/* ---- 9a. Hero — a poster, not a photo band ------------------------------
+   No image here on purpose: a large photo beside a large headline made two
+   focal points competing for the same glance. The photo moved into the Group
+   Classes strip, where it supports rather than competes.
+
+   Height is content-driven with a floor, not 100svh: the schedule below has to
+   break the fold. Verified at 375, 768 and 1440 — re-check all three before
+   changing the min-height or the padding.
+   ---------------------------------------------------------------------- */
+
 .hero {
   position: relative;
-  /* Deliberately SHORTER than the viewport. The client asked for classes and
-     the schedule to be front and centre, so the schedule below must be partly
-     visible on landing — a cut-off row is what tells a visitor to scroll.
-     svh, not vh: on mobile vh resolves to the LARGE viewport, so a 100vh hero
-     hides its own bottom edge behind browser chrome. */
-  min-height: 68svh;
-  display: grid;
-  grid-template-columns: 1fr;
+  min-height: 56svh;
+  display: flex;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
   text-align: center;
   overflow: hidden;
-  padding-top: var(--nav-height);
+  padding-block: var(--space-2xl) var(--space-xl);
+  padding-top: calc(var(--nav-height) + var(--space-2xl));
   background: var(--cf-surface-page);
 }
 
-@supports not (min-height: 100svh) {
-  .hero { min-height: 68vh; }
+@supports not (min-height: 56svh) {
+  .hero { min-height: 56vh; }
 }
 
-/* Mobile: the photo fills the hero behind the scrim. */
-.hero-media {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-
-.hero-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* The subject is in the lower half of the frame; bias the crop down so her
-     head is not the first thing cut on a short viewport. */
-  object-position: 50% 35%;
-}
-
-/* Flat scrim, not a gradient. 0.85 is a measured floor: below it, gray body
-   copy over a blown-out region of the photo drops under 4.5:1. */
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgb(var(--cf-black-rgb) / var(--alpha-hero-scrim));
-}
-
-/* The hero sits inside main, so it paints above the global texture plate and
-   the photo stays clean. This gives the hero its own grain back. */
+/* The hero sits inside main, so it paints above the global texture plate.
+   This gives it its own grain back. */
 .hero::after {
   content: '';
   position: absolute;
@@ -1094,97 +1087,101 @@ main,
   opacity: var(--alpha-grain);
 }
 
-/* A column, not a block of inline flow. .ribbon and .btn are both inline-level
-   and would otherwise sit on the same line whenever the viewport is wide
-   enough — which put "All Levels. All Welcome." beside the CTA at 768px. */
+/* A column, not inline flow. .ribbon and .btn are both inline-level and would
+   otherwise share a line whenever the viewport is wide enough. */
 .hero-content {
   position: relative;
   z-index: var(--z-content);
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 48rem;
+  max-width: 46rem;
   padding-inline: var(--space-md);
-}
-
-/* Desktop: two columns. Copy sits on flat colour rather than over a photo, so
-   its contrast is guaranteed rather than dependent on what is behind it, and
-   the headline paints without waiting on the image — which is the LCP win. The
-   photo keeps its native portrait shape instead of being cropped to a band. */
-@media (min-width: 64rem) {
-  .hero {
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-    text-align: left;
-    justify-items: stretch;
-  }
-
-  /* relative + an absolutely positioned img, NOT a static img in the cell.
-     A 4:5 image laid out statically at ~half of a wide viewport is ~960px
-     tall, which drives the grid row past 100svh and pushes the CTA below the
-     fold. Taking the img out of flow lets the row be sized by min-height
-     instead, and object-fit crops the photo to whatever that height is. */
-  .hero-media {
-    position: relative;
-    grid-column: 2;
-    grid-row: 1;
-    align-self: stretch;
-    overflow: hidden;
-    border-inline-start: var(--bw-panel) solid var(--cf-border-panel);
-  }
-
-  .hero-media img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 30%;
-  }
-
-  .hero-content {
-    grid-column: 1;
-    grid-row: 1;
-    align-items: flex-start;
-    align-self: center;
-    justify-self: end;
-    max-width: 34rem;
-    padding-inline: var(--space-xl);
-  }
-
-  /* No photo behind the text on this layout, so no scrim is needed. */
-  .hero-overlay { display: none; }
-
-  .hero-eyebrow { align-self: start; }
-  .hero-sub { margin-inline: 0; }
 }
 
 .hero-eyebrow { margin-bottom: var(--space-sm); }
 
+/* Small phones: the schedule earns its place in the hero only if the CTA is
+   still reachable without scrolling. Every value below was trimmed against a
+   375x667 viewport until "Claim Your Free Class" cleared the fold. Re-measure
+   before loosening any of them. */
+@media (max-width: 29.99rem) {
+  .hero {
+    min-height: 0;
+    padding-top: calc(var(--nav-height) + var(--space-md));
+    padding-bottom: var(--space-md);
+  }
+
+  /* The eyebrow wraps to two lines at this width; less tracking keeps it on
+     one and buys back a whole line. */
+  .hero-eyebrow {
+    letter-spacing: 0.1em;
+    font-size: var(--fs-2xs);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .hero-headline { margin-bottom: var(--space-2xs); }
+  .hero-banner   { margin-bottom: var(--space-2xs); }
+  .hero-schedule { margin-block: var(--space-sm) var(--space-md); gap: var(--space-2xs); }
+
+  /* One line per day instead of a label stacked over its times. Six stacked
+     lines pushed the CTA off a 360x640 screen; three single lines fit with
+     room to spare and read like a real timetable. */
+  /* flex-wrap, not a fixed two-column grid: a fixed label column overflowed
+     into the times at 360px. Here the times drop to a second line instead. */
+  .schedule__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--space-sm);
+    row-gap: var(--space-3xs);
+    padding-top: var(--space-3xs);
+    text-align: left;
+  }
+
+  .schedule__day  { flex: 0 0 auto; }
+  .schedule__slots { flex: 1 1 auto; min-width: 0; }
+
+  .schedule__day {
+    margin-bottom: 0;
+    padding-top: 0;
+    border-block-start: 0;
+    letter-spacing: 0.06em;
+  }
+
+  .schedule__times { justify-content: flex-start; gap: var(--space-2xs); }
+  .schedule__times li { font-size: var(--fs-lead); }
+
+  /* The rule moves to the row so each day still reads as its own band. */
+  .schedule__row + .schedule__row {
+    border-block-start: var(--bw-hair) solid var(--cf-border-rule);
+    padding-top: var(--space-2xs);
+  }
+}
+
+/* Short phones (360x640 and similar). The constraint here is viewport HEIGHT,
+   not width, so it is queried on height: a 360px-wide phone with a tall screen
+   has no problem. Trimmed until the CTA cleared the fold at 640px tall. */
+@media (max-width: 29.99rem) and (max-height: 680px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-2xs));
+    padding-bottom: var(--space-sm);
+  }
+  .hero-headline { font-size: 2.25rem; }
+  .hero-schedule { margin-block: var(--space-2xs) var(--space-sm); }
+  .hero-trust    { margin-top: var(--space-3xs); }
+}
+
+/* Stacked on two lines like the poster. line-height is already 0.92, so the
+   two words lock together as one block of ink. */
 .hero-headline {
   font-size: var(--fs-d0);
   color: var(--cf-text-display);
   margin-bottom: var(--space-sm);
 }
 
-.hero-sub {
-  font-size: var(--fs-lead);
-  color: var(--cf-text-body);
-  max-width: 34rem;
-  margin-inline: auto;
-  margin-bottom: var(--space-md);
-}
-
-/* "Group Classes" is far shorter than the old two-line tagline, so it can run
-   at full display size without overflowing the half-width column. */
-@media (min-width: 64rem) {
-  .hero-headline { font-size: var(--fs-d0); }
-}
-
-/* The poster's teal banner under the headline. .ribbon supplies the torn edge
-   and the fill; this is the display-size treatment. Bone on teal is 5.9:1. */
 .hero-banner {
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
   font-family: var(--font-display);
   font-size: var(--fs-d4);
   line-height: var(--lh-display);
@@ -1337,11 +1334,19 @@ main,
 @media (min-width: 43.75rem) {
   .photo-strip {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     overflow: visible;
     scroll-snap-type: none;
   }
   .photo-strip > li { flex: initial; }
+
+  /* The gym gallery has six tiles, so three across gives two clean rows. */
+  .gallery .photo-strip { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* The classes strip has four tiles — one row at desktop, 2x2 at tablet. */
+@media (min-width: 64rem) {
+  .classes .photo-strip { grid-template-columns: repeat(4, 1fr); }
 }
 
 /* Three columns at every width above the strip breakpoint. Six photos then
@@ -1395,93 +1400,86 @@ main,
    section puts next (the schedule grid, the action buttons). */
 .section-body:last-of-type { margin-bottom: var(--space-xl); }
 
-/* The schedule is a wall of boards, so it reads like the printed class boards
-   in the gym. One column on a phone, three across from 700px — never two,
-   which would leave a single orphaned day on the second row. */
-.schedule {
+/* ---- The class schedule, inside the hero -------------------------------
+   Compact by design. As full board panels it needed a section of its own and
+   pushed the times below the fold, which is the exact problem this round set
+   out to fix. Here it is a three-column strip: day label in teal small caps
+   over a bone rule, times beneath. Still one <dl>, still <time datetime>,
+   still the single source of truth with the JSON-LD beside it.
+   ---------------------------------------------------------------------- */
+
+.hero-schedule {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
-}
-
-@media (min-width: 43.75rem) {
-  .schedule { grid-template-columns: repeat(3, 1fr); }
-
-  /* Keep every teal bar on the row the same height even if a day name wraps;
-     otherwise the bars stagger and the wall-of-boards read falls apart. */
-  @supports (grid-template-rows: subgrid) {
-    .schedule { grid-auto-rows: auto 1fr; }
-    .schedule__row { grid-row: span 2; grid-template-rows: subgrid; }
-  }
-}
-
-/* dt carrying the board's header bar.
-   Smaller than --fs-d4: in a three-column grid the bar is only ~215px wide,
-   and at 25px "Monday–Thursday" wrapped and ran under the Today badge.
-   flex-wrap is the belt-and-braces — if the name still needs two lines at some
-   width, the badge drops below it instead of overlapping. */
-.schedule__day {
-  flex-wrap: wrap;
-  row-gap: var(--space-3xs);
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.0625rem, 0.93rem + 0.6vw, 1.375rem);   /* 17 -> 22 */
-  line-height: var(--lh-display);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  font-synthesis: none;
-}
-
-/* min-width:0 lets the name shrink and wrap inside itself. Without it the
-   whole label is an unshrinkable flex item and drops below the icon, leaving
-   the icon orphaned on its own line around 700px. */
-.schedule__day-name { min-width: 0; }
-
-/* dd carrying the board's body. The reset already zeroes the UA's 40px
-   margin-inline-start on dd. */
-.schedule__slots { align-items: stretch; }
-
-.schedule__times {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
+  gap: var(--space-sm) var(--space-lg);
   width: 100%;
+  margin-block: var(--space-md) var(--space-lg);
+  text-align: center;
 }
 
-.schedule__times li {
-  padding: var(--space-2xs) var(--space-xs);
-  background: var(--cf-surface-raised);
-  border-inline-start: var(--bw-2) solid var(--cf-decor);
-  font-size: var(--fs-lead);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--cf-text-strong);
+/* On a phone each day is one horizontal line — label above a single row of
+   times. Stacking the times vertically here made the hero tall enough to push
+   the CTA below the fold, which defeats the point of putting the schedule in
+   the hero at all. From 480px it becomes three columns. */
+.schedule__times {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2xs) var(--space-sm);
 }
 
-/* Today's column. Progressive enhancement only — see markToday() in main.js.
-   Marked with a bright-teal edge plus a label, never colour alone. */
-.schedule__row.is-today { border-color: var(--cf-border-accent); }
+@media (min-width: 30rem) {
+  .hero-schedule { grid-template-columns: repeat(3, auto); justify-content: center; }
+  .schedule__times { flex-direction: column; gap: var(--space-3xs); }
+}
 
-/* The marker sits in the board BODY, not the header bar. In the bar it pushed
-   the day name onto a second line, which made the teal bars different heights
-   across the row and broke the wall-of-boards alignment. */
-.schedule__row.is-today .schedule__slots::before {
-  content: 'Today';
-  align-self: flex-start;
-  padding: 0.1rem var(--space-2xs);
-  margin-bottom: var(--space-3xs);
-  background: var(--cf-surface-invert);
-  color: var(--cf-text-on-invert);
+.schedule__row { padding-top: var(--space-2xs); }
+
+/* A bone rule over each column, echoing the boards without the full panel. */
+.schedule__day {
+  border-block-start: var(--bw-1) solid var(--cf-border-panel);
+  padding-top: var(--space-2xs);
+  margin-bottom: var(--space-2xs);
   font-family: var(--font-body);
   font-size: var(--fs-2xs);
   font-weight: 600;
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
+  color: var(--cf-text-accent);
+  white-space: nowrap;
 }
 
-/* The poster's three feature panels. Built on .board, so they inherit the
-   teal header bar and outlined-panel treatment of the schedule beside them. */
+.schedule__times { display: flex; }
+
+.schedule__times li {
+  font-family: var(--font-display);
+  font-size: var(--fs-d4);
+  line-height: 1.15;
+  letter-spacing: var(--tracking-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--cf-text-display);
+  font-synthesis: none;
+}
+
+/* Today's column, progressive enhancement only — see markToday() in main.js.
+   Teal alone is 2.88:1, so the marker is a bone label, not a colour change. */
+.schedule__row.is-today .schedule__day {
+  border-block-start-color: var(--cf-border-accent);
+  color: var(--cf-text-strong);
+}
+
+/* A literal bullet character, not a CSS unicode escape. The escape's
+   terminating-space rule makes it easy to mangle, and it already was once. */
+.schedule__row.is-today .schedule__day::after {
+  content: ' • Today';
+  color: var(--cf-text-accent);
+}
+
+/* Lets the day name shrink and wrap inside itself rather than being an
+   unshrinkable flex item that pushes the times onto a new line. */
+.schedule__day-name { min-width: 0; }
+
+/* The poster's three feature panels, built on .board so they match the rest. */
 .features { margin-bottom: var(--space-xl); }
 
 /* Hand-drawn connector, in the language of the arrows on the gym's boards.
@@ -1496,8 +1494,8 @@ main,
 }
 
 /* Draw-on is opt-in, not opt-out: gating on no-preference means the animation
-   is simply never declared for anyone who asked for reduced motion, rather
-   than being declared and then cancelled. */
+   is never declared for anyone who asked for reduced motion, rather than being
+   declared and then cancelled. */
 @media (prefers-reduced-motion: no-preference) {
   .arrow path {
     stroke-dasharray: 220;
@@ -1937,6 +1935,32 @@ main,
 }
 
 .footer-brand .nav-logo { font-size: 1.25rem; margin-bottom: var(--space-3xs); }
+
+/* The tagline exactly as the boards set it: a teal rule with a star, then the
+   line with "Country." picked out in teal. */
+.brand-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-block: var(--space-2xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--cf-text-body);
+  font-synthesis: none;
+}
+
+.brand-line::before,
+.brand-line::after {
+  content: '';
+  flex: 1 1 auto;
+  max-width: 2.5rem;
+  height: var(--bw-hair);
+  background: var(--cf-decor);
+}
+
+.brand-line b { color: var(--cf-text-accent); font-weight: inherit; }
 
 .footer-tagline {
   font-family: var(--font-display);
