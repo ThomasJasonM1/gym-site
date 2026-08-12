@@ -446,9 +446,15 @@ body::after {
   opacity: var(--alpha-mottle);
 }
 
-/* Four selectors lift every content root above the plate. Deterministic, and
-   no per-component z-index bookkeeping. */
-.skip-link,
+/* Three selectors lift every content root above the plate. Deterministic, and
+   no per-component z-index bookkeeping.
+
+   .skip-link is deliberately NOT in this list. It already carries its own
+   `position: absolute; z-index: var(--z-skip)`, and because this rule sits
+   later in the file at equal specificity, adding it here re-pointed it to
+   `position: relative` — which kept `top: -100%` painting it off-screen while
+   it still consumed 44px of layout at the top of <body>, pushing the hero
+   down by exactly that much and stealing it from the first screenful. */
 .navbar,
 main,
 .footer {
@@ -1063,26 +1069,78 @@ main,
    focal points competing for the same glance. The photo moved into the Group
    Classes strip, where it supports rather than competes.
 
-   Height is content-driven with a floor, not 100svh: the schedule below has to
-   break the fold. Verified at 375, 768 and 1440 — re-check all three before
-   changing the min-height or the padding.
+   Exactly one screenful: the fold lands on the seam between the hero and
+   "Come Sweat. Make Friends. Get Stronger." — you see all of #home and none of
+   what follows. min-height, never height, so the box can still grow past the
+   viewport rather than clip on a screen too short to hold the content; the
+   svh padding and the two height tiers further down are what keep it from
+   needing to. Verified by measuring, not by eye — see those tiers.
    ---------------------------------------------------------------------- */
 
 .hero {
   position: relative;
-  min-height: 56svh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   overflow: hidden;
+  /* mix-blend-mode on ::before blends with whatever is behind it; isolate so
+     that is the hero's own background and never the page beyond it. */
+  isolation: isolate;
   padding-block: var(--space-2xl) var(--space-xl);
   padding-top: calc(var(--nav-height) + var(--space-2xl));
   background: var(--cf-surface-page);
 }
 
-@supports not (min-height: 56svh) {
-  .hero { min-height: 56vh; }
+@supports not (min-height: 100svh) {
+  /* vh, which on a phone means the URL bar can crop the bottom of the hero.
+     Only browsers older than 2022 land here. */
+  .hero { min-height: 100vh; }
+}
+
+/* The backdrop illustration from the previous site (IMG_8374).
+
+   It is pale line art on WHITE, so it cannot go on this near-black page as-is:
+   scrimmed down far enough for the copy to stay legible it just reads as grey
+   mud, which is how it looked before. invert() flips it to light strokes on
+   black, and screen blending drops the artwork's own white ground to nothing
+   so only the strokes survive — without that the inverted white rectangle
+   leaves a visible tonal seam down the middle of the hero.
+
+   A background-image, not an <img>: purely decorative, so it stays out of the
+   accessibility tree, needs no alt text, and cannot shift layout.
+
+   DESKTOP ONLY, and kept to the right. Below 1024px the hero already carries
+   the headline, banner, CTA and the whole schedule; the artwork ended up
+   directly behind the class times, and light strokes behind bone text cut its
+   contrast in a way a colour-token audit cannot see. Nothing is lost — it is
+   decoration, and it is absent rather than illegible. */
+@media (min-width: 64rem) {
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: image-set(
+        url('../assets/img/hero-backdrop-lifter-940.webp') type('image/webp'),
+        url('../assets/img/hero-backdrop-lifter-940.jpg') type('image/jpeg'));
+    background-repeat: no-repeat;
+    /* Inset on both axes so the whole illustration is in frame — a negative
+       offset bled the barbell and the botanicals off the right edge. */
+    background-position: right 2rem bottom 0;
+    /* Capped at the source width — the art is 940px, so a bare percentage
+       upscales it on wide monitors and the line work goes soft. */
+    background-size: min(38%, 940px) auto;
+    filter: invert(1) grayscale(0.55);
+    mix-blend-mode: screen;
+    opacity: 0.6;
+  }
+}
+
+/* Decoration only — drop it when the user asks for more contrast. */
+@media (prefers-contrast: more) {
+  .hero::before { display: none; }
 }
 
 /* The hero sits inside main, so it paints above the global texture plate.
@@ -1147,13 +1205,46 @@ main,
   letter-spacing: 0.02em;
 }
 
+/* ---- Fitting the hero into one screenful ------------------------------
+   #home is the first thing anyone sees and the only section that has to be
+   whole on arrival, so its vertical rhythm is a function of viewport HEIGHT,
+   not of content alone. A 1536x900 desktop and a 1280x620 laptop differ by
+   more than the entire schedule block; fixed padding that frames the poster
+   properly on the first pushes the CTA off the second.
+
+   clamp() keeps the generous frame wherever there is room and gives it back
+   where there is not, and the headline is capped in svh so the largest single
+   element in the hero cannot alone outgrow the screen it sits on.
+
+   Placement matters twice over: this must come AFTER the .hero and
+   .hero-headline rules above (equal specificity, file order decides) and
+   BEFORE the mobile overrides below, which set their own padding and win.
+
+   @supports, because a browser without svh would drop `min(..., 12svh)` as an
+   invalid font-size and fall back to the UA's h1 size. Those browsers keep the
+   fixed values above, which is what shipped before.
+   ---------------------------------------------------------------------- */
+@supports (height: 1svh) {
+  .hero {
+    padding-block: clamp(var(--space-md), 5svh, var(--space-2xl))
+                   clamp(var(--space-md), 4svh, var(--space-xl));
+    padding-top: calc(var(--nav-height) + clamp(var(--space-md), 5svh, var(--space-2xl)));
+  }
+
+  /* min(), not clamp(): --fs-d0 is already a width-based clamp, and this only
+     ever takes height away from it — it never makes the headline bigger than
+     the width-driven size the poster was designed around. */
+  .hero-headline { font-size: min(var(--fs-d0), 12svh); }
+}
+
 /* Mobile hero overrides. These MUST sit after the .hero-* component rules
    above: they carry the same specificity, so file order decides, and when
    they lived higher up the base font sizes silently won. */
 
 @media (max-width: 29.99rem) {
+  /* No min-height reset here: a phone gets the same full screenful as a
+     desktop, and the padding below is what buys the room back. */
   .hero {
-    min-height: 0;
     padding-top: calc(var(--nav-height) + var(--space-md));
     padding-bottom: var(--space-md);
   }
@@ -1168,7 +1259,10 @@ main,
 
   .hero-headline { margin-bottom: var(--space-2xs); }
   .hero-banner   { margin-bottom: var(--space-2xs); }
-  .hero-schedule { margin-block: var(--space-sm) var(--space-md); gap: var(--space-2xs); }
+  /* `.hero .hero-schedule`, not `.hero-schedule`: the component rule in §11
+     sits later in the file at equal specificity, so on file order it won and
+     this override did nothing. The extra class is what makes it land. */
+  .hero .hero-schedule { margin-block: var(--space-sm) var(--space-md); gap: var(--space-2xs); }
 
   /* One line per day instead of a label stacked over its times. Six stacked
      lines pushed the CTA off a 360x640 screen; three single lines fit with
@@ -1219,10 +1313,58 @@ main,
      sit immediately beneath it, and the type stays full size.
      Only .hero-cta is focusable among these, so DOM and tab order are
      unchanged — this alters paint order only. */
-  .hero-schedule { order: 1; margin-block: var(--space-md) 0; }
-  .hero-trust    { order: 2; margin-top: var(--space-sm); }
+  .hero .hero-schedule { order: 1; margin-block: var(--space-md) 0; }
+  .hero-trust          { order: 2; margin-top: var(--space-sm); }
 }
 
+/* Short landscape screens from tablet up — laptops with a lot of browser
+   chrome, and any window shorter than about 736px. The svh padding and the
+   capped headline above do most of the work; this closes the last of the gap
+   by tightening the spaces between blocks, which is the least visible place
+   to take height from. Nothing is removed and no type shrinks — the poster
+   just sits closer together.
+
+   Measured, not assumed. The hero is exactly one viewport tall now, so what
+   matters is the clearance left around the content — measured from the navbar
+   to the eyebrow, and from "No experience required." to the fold:
+
+     1536x735  80 / 73      1280x620  68 / 62      1024x560  45 / 41
+
+   1024x560 is the tightest window that still fits. Re-measure all three if
+   anything in the hero gains a line. */
+@media (min-width: 30rem) and (max-height: 46rem) {
+  .hero-eyebrow  { margin-bottom: var(--space-2xs); }
+  .hero-headline { margin-bottom: var(--space-2xs); }
+  .hero-banner   { margin-bottom: var(--space-sm); }
+  .hero-trust    { margin-top: var(--space-2xs); }
+
+  /* See the note in the mobile block above — the extra .hero is load-bearing
+     against the later component rule, not decoration. */
+  .hero .hero-schedule { margin-block: var(--space-sm); }
+}
+
+/* Shorter still (under ~688px of viewport): tightening the gaps alone left
+   only 8px of clearance at 1280x620 and 2px at 1024x600, which any font-metric
+   difference on a real machine would wipe out. So the schedule spends width
+   instead of height — each day's times go back on ONE line, the way they do on
+   a phone, and every column becomes two lines tall instead of four.
+
+   Safe on width because this tier starts at 48rem: the three columns need
+   about 680px inline and .hero-content is 736px wide. Below that the phone
+   layout already owns the hero. Nothing is hidden and no type shrinks. */
+@media (min-width: 48rem) and (max-height: 43rem) {
+  /* The three days need ~775px inline and the column is 736px, so Monday's
+     third time wrapped to a line of its own and the row read lopsided. This is
+     the one tier where the hero is short of height and flush with width. */
+  .hero-content { max-width: 52rem; }
+
+  .hero .schedule__times {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3xs) var(--space-sm);
+  }
+}
 
 /* ---- Sticky mobile action bar -----------------------------------------
    Mobile only. Two 50/50 targets, per the brief.
@@ -1485,20 +1627,6 @@ main,
   font-synthesis: none;
 }
 
-/* Today's column, progressive enhancement only — see markToday() in main.js.
-   Teal alone is 2.88:1, so the marker is a bone label, not a colour change. */
-.schedule__row.is-today .schedule__day {
-  border-block-start-color: var(--cf-border-accent);
-  color: var(--cf-text-strong);
-}
-
-/* A literal bullet character, not a CSS unicode escape. The escape's
-   terminating-space rule makes it easy to mangle, and it already was once. */
-.schedule__row.is-today .schedule__day::after {
-  content: ' • Today';
-  color: var(--cf-text-accent);
-}
-
 /* Lets the day name shrink and wrap inside itself rather than being an
    unshrinkable flex item that pushes the times onto a new line. */
 .schedule__day-name { min-width: 0; }
@@ -1538,6 +1666,12 @@ main,
   justify-content: center;
   gap: var(--space-sm);
 }
+
+/* Space below the buttons only when something actually follows them. In Group
+   Classes the body copy sits underneath and was butting straight up against
+   the buttons; in Personal Training the row is last, and a plain
+   margin-bottom there would pad the section out for nothing. */
+.section-actions + * { margin-top: var(--space-xl); }
 
 /* ---- The creed band ----------------------------------------------------
    One full-bleed block of teal between the classes and the training sections.

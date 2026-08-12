@@ -67,6 +67,9 @@ PRESETS = {
     "gallery":     ([960, 480],        (4, 5),   110,   "cover"),
     "feature":     ([1200, 640],       (4, 5),   150,   "cover"),
     "og":          ([1200],            (40, 21), 120,   "cover"),  # 1200x630
+    # Decorative backdrop art. No crop, and a low budget because it is only
+    # ever shown at low opacity behind the hero.
+    "backdrop":    ([940, 640],        None,     110,   "contain"),
 }
 
 JPEG_QUALITY_STEPS = [88, 84, 80, 76, 72, 68, 64, 60]

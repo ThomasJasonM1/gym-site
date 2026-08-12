@@ -123,12 +123,11 @@
          two representations together).
 
          This is plain HTML, not a JS array, because the page must work with
-         JavaScript disabled. data-days holds ISO weekday numbers (Mon=1)
-         and is used only to highlight today — purely decorative.
+         JavaScript disabled. No script reads or writes any of it.
          ══════════════════════════════════════════════════════════════════ -->
     <dl class="schedule hero-schedule">
 
-      <div class="schedule__row" data-days="1 2 3 4">
+      <div class="schedule__row">
         <dt class="schedule__day">
           <span class="schedule__day-name">Monday&ndash;Thursday</span>
         </dt>
@@ -141,7 +140,7 @@
         </dd>
       </div>
 
-      <div class="schedule__row" data-days="5">
+      <div class="schedule__row">
         <dt class="schedule__day">
           <span class="schedule__day-name">Friday</span>
         </dt>
@@ -153,7 +152,7 @@
         </dd>
       </div>
 
-      <div class="schedule__row" data-days="6">
+      <div class="schedule__row">
         <dt class="schedule__day">
           <span class="schedule__day-name">Saturday</span>
         </dt>

@@ -50,7 +50,7 @@ gym-site/
 
 | id | Heading | Notes |
 |---|---|---|
-| `home` | **h1 Group Classes** | The hero *is* the classes pitch, deliberately. `68svh`, not full height, so the schedule below breaks the fold. |
+| `home` | **h1 Group Classes** | The hero *is* the classes pitch, deliberately. Sized to fit **one screenful** — see gotchas. |
 | `classes` | h2 Class Schedule | Schedule boards, arrow, free-class CTA + plans link, the client's verbatim copy, three feature panels, photo strip |
 | `training` | h2 Personal Training | Also carries `#schedule` as an alias — see gotchas |
 | `gallery` | h2 Our Gym | Photo grid |
@@ -127,6 +127,21 @@ It is plain HTML, not a JS array, because the page must work with JS disabled.
   phrase.
 - All-caps is applied in CSS, never in the DOM — VoiceOver spells short
   all-caps strings out as initialisms.
+- **The hero is exactly one screenful — the fold lands on the seam between
+  `#home` and "Come Sweat".** `min-height: 100svh` (never `height`, so a screen
+  too short grows instead of clipping), and the content is kept inside that
+  box by `svh`-clamped padding, an `svh` cap on the headline, and two
+  height-tiered media queries — `max-height: 46rem` tightens the gaps,
+  `43rem` puts each day's class times on one line so the schedule spends
+  width instead of height. Anything that adds a line to `#home` eats that
+  clearance: re-measure the gap from the navbar to the eyebrow and from the
+  trust line to the fold at 1536×735, 1280×620, 1024×560 and 360×640 before
+  shipping it. Nothing fits 320×568 — there the CTA still clears the fold and
+  the rest scrolls, which is the intended failure.
+- **Keep `.skip-link` out of the `position: relative` z-index lift.** It sits
+  later in the file at equal specificity, so listing it there overrode its own
+  `position: absolute` and left it holding 44px of layout at the top of every
+  page — invisible, because `top: -100%` still moved it out of sight.
 
 ## Deploy
 
